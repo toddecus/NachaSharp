@@ -1,4 +1,4 @@
-namespace NachaFile; 
+namespace NachaSharp; 
 public class BatchHeaderRecord
 {
     public string RecordTypeCode = "5";  // Fixed value for batch header

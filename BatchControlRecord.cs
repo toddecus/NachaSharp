@@ -1,4 +1,4 @@
-namespace NachaFile; 
+namespace NachaSharp; 
 public class BatchControlRecord
 {
     public string RecordTypeCode = "8";  // Fixed value

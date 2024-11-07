@@ -1,4 +1,4 @@
-﻿namespace NachaFile
+﻿namespace NachaSharp 
 {
     public class Program
     {
@@ -12,7 +12,7 @@
                 var nachaFileGenerator = new NachaFileGenerator();
 
                 // Generate the NACHA file
-                nachaFileGenerator.GenerateNachaFile("/Users/todd.ellermann/projects/NachaHarness/outputFiles/nachaFile.txt");
+                nachaFileGenerator.GenerateNachaFile("outputFiles/nachaFile.txt");
 
 
                 Console.WriteLine("NACHA file generated successfully!");

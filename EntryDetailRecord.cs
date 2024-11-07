@@ -1,4 +1,4 @@
-namespace NachaFile;
+namespace NachaSharp;
 public class EntryDetailRecord
 {
     public string RecordTypeCode = "6";
