@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NachaSharp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cbd4871294e20a865424fb78d8c6cfa3d60174b9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4c03a2de3dd5bff64d35c100464738e8521c0cbb")]
 [assembly: System.Reflection.AssemblyProductAttribute("NachaSharp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NachaSharp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

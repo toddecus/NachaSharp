@@ -12,7 +12,7 @@
                 var nachaFileGenerator = new NachaFileGenerator();
 
                 // Generate the NACHA file
-                nachaFileGenerator.GenerateNachaFile("outputFiles/nachaFile.txt");
+                nachaFileGenerator.GenerateNachaFile();
 
 
                 Console.WriteLine("NACHA file generated successfully!");

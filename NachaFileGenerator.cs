@@ -32,37 +32,31 @@ public class NachaFileGenerator
             ReceiverName = "John Doe",
             TraceNumber = "123456789000001"
         };
-        var entryDetailDebitAddendum = new EntryDetailRecord
+        var entryDetailDebitAddendum = new EntryAddendumRecord
         {
-            TransactionCode = "27",  // Checking account debit
-            ReceivingDFIRoutingNumber = "01100001",
-            ReceivingDFIAccountNumber = "123456789",
-            Amount = 500.00m,  // $500.00
-            ReceiverName = "John Doe",
-            TraceNumber = "123456789000001"
+            AddendaSequenceNumber = 1,
+            EntryDetailSequenceNumber = "1234567",
+            PaymentRelatedInformation = "Payment for invoice 12345"
         };
         var entryDetailCredit = new EntryDetailRecord
         {
             TransactionCode = "22",  // Checking account credit
-            ReceivingDFIRoutingNumber = "01100001",
+            ReceivingDFIRoutingNumber = "01100002",
             ReceivingDFIAccountNumber = "123456789",
             Amount = 500.00m,  // $500.00
             ReceiverName = "John Doe",
             TraceNumber = "123456789000001"
         };
-        var entryDetailCreditAddendum = new EntryDetailRecord
+        var entryDetailCreditAddendum = new EntryAddendumRecord
         {
-            TransactionCode = "22",  // Checking account credit
-            ReceivingDFIRoutingNumber = "01100001",
-            ReceivingDFIAccountNumber = "123456789",
-            Amount = 500.00m,  // $500.00
-            ReceiverName = "John Doe",
-            TraceNumber = "123456789000001"
-        };  
+            AddendaSequenceNumber = 2,
+            EntryDetailSequenceNumber = "1234567",
+            PaymentRelatedInformation = "Payment for invoice 12346"
+        };
         var entryDetailCredit2 = new EntryDetailRecord
         {
             TransactionCode = "22",  // Checking account credit
-            ReceivingDFIRoutingNumber = "01100001",
+            ReceivingDFIRoutingNumber = "01100003",
             ReceivingDFIAccountNumber = "123456789",
             Amount = 500.00m,  // $500.00
             ReceiverName = "John Doe",
@@ -80,15 +74,11 @@ public class NachaFileGenerator
         {
             BatchCount = 1,
             BlockCount = 1,
-            EntryAddendaCount = 2,
-            EntryHash = 0,
-            TotalDebitAmount = 0.00m,
-            TotalCreditAmount = 500.00m,
-            ImmediateDestination = "123456789",
-            ImmediateOrigin = "987654321",
-            FileCreationDate = DateTime.Now,
-            FileCreationTime = DateTime.Now.TimeOfDay,
-            FileIdModifier = "A"
+            EntryHash = FileControlRecord.CalculateEntryHash(new List<string> { "011000012", "011000013", "011000014", "011000015", "011000016" }),
+            EntryAndAddendumCount = 3,
+            TotalDebitDollarAmount = 0.00m,
+            TotalCreditDollarAmount = 1500.00m
+         
         };
 
         using (var writer = new StreamWriter(filePath))
@@ -102,9 +92,9 @@ public class NachaFileGenerator
             writer.WriteLine(entryDetailCredit2.GenerateRecord());//Credit
             writer.WriteLine(batchControl.GenerateRecord());
             writer.WriteLine(fileControl.GenerateRecord());
-            writer.WriteLine(fileControl.padFile(3));
+            writer.Write(FileControlRecord.PadFile(3));
         }
 
-        Console.WriteLine("NACHA file generated successfully.");
+        
     }
 }
