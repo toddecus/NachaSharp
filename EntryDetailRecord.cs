@@ -10,6 +10,8 @@ public class EntryDetailRecord
     public string ReceiverName;
     public string TraceNumber; // Unique identifier
 
+    public EntryAddendumRecord EntryAddendumRecord; // Optional addendum record
+
     public string GenerateRecord()
     {
         return $"{RecordTypeCode}{TransactionCode}{ReceivingDFIRoutingNumber.PadLeft(8)}{ReceivingDFIAccountNumber.PadRight(17)}{Amount.ToString("0000000000")}{ReceiverIdNumber.PadRight(15)}{ReceiverName.PadRight(22)}{TraceNumber.PadLeft(15)}";

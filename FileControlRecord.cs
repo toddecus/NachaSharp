@@ -3,12 +3,12 @@ public class FileControlRecord
 {
     public RecordTypeCode RecordTypeCode = RecordTypeCode.FileControl;
     //publcipublic string RecordTypeCode = "9";  // Fixed value for File Control
-    public int BatchCount { get; set; }  // Total number of Batch Header Records
-    public int BlockCount { get; set; }  // Number of 940-character blocks (10 records each)
-    public int EntryAndAddendumCount { get; set; }  // Total entry and entry addendum records
+    public int BatchCount { get; set; }   // Total number of Batch Header Records 6 digits
+    public int BlockCount { get; set; }  // Number of 940-character blocks (10 records each) 6 digits
+    public int EntryAndAddendumCount { get; set; }  // Total entry and entry addendum records 8 digitsj
     public string EntryHash { get; set; }  //Hash total of all routing numbers, using the last 10 digits (10 characters).
-    public decimal TotalDebitDollarAmount { get; set; }  // Total debits in the file
-    public decimal TotalCreditDollarAmount { get; set; }  // Total credits in the file
+    public decimal TotalDebitDollarAmount { get; set; }  // Total debits in the file 12 digits
+    public decimal TotalCreditDollarAmount { get; set; }  // Total credits in the file 12 digits
     public string Reserved = "".PadRight(39);  // Reserved field (empty)
 
     public static string CalculateEntryHash(IEnumerable<string> routingNumbers)
