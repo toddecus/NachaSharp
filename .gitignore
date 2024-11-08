@@ -1,2 +1,50 @@
+# Build Folders
 bin/
 obj/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Auto-generated files
+*.Generated.cs
+
+# Logs
+*.log
+
+# Visual Studio specific
+.vscode/
+.vs/
+.idea/
+
+# Rider specific
+.idea/
+
+# ASP.NET specific
+appsettings.*.json
+appsettings.json
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# Packages
+*.nupkg
+*.snupkg
+packages/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# DotNet user secrets
+secrets.json
+
+# Local environment settings
+.env
+
+# Docker files
+docker-compose.override.yml
