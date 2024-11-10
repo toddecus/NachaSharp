@@ -28,7 +28,8 @@ public class FileHeaderRecord
     public readonly string FormatCode = "1";      // Fixed format code
     public required string ImmediateDestinationName; // Destination Business Name 23 characters name of the bank
     public required string ImmediateOriginName;   // Origin Business Name 23 characters Name of your Company
-    public string ReferenceCode;  // Customer reference code for their own tracking Guid? 8 characters
+    public required string ReferenceCode;  // Customer reference code for their own tracking Guid? 8 characters
+
     [SetsRequiredMembers]    
     public FileHeaderRecord(string immediateDestinationName, string immediateDestination, string immediateOriginName, string immediateOrigin, string referenceCode)
     {
@@ -41,6 +42,6 @@ public class FileHeaderRecord
 
     public string GenerateRecord()
     {
-        return $"{RecordTypeCode.ToStringValue()}{PriorityCode}{ImmediateDestination.PadLeft(10, ' ')}{ImmediateOrigin.PadLeft(10, ' ')}{FileCreationDate:yyMMdd}{FileCreationTime:hhmm}{FileIdModifier}{RecordSize}{BlockingFactor}{FormatCode}{ImmediateDestinationName.PadRight(23)}{ImmediateOriginName.PadRight(23)}";
+        return $"{RecordTypeCode.ToStringValue()}{PriorityCode}{ImmediateDestination.PadLeft(10, ' ')}{ImmediateOrigin.PadLeft(10, ' ')}{FileCreationDate:yyMMdd}{FileCreationTime:hhmm}{FileIdModifier}{RecordSize}{BlockingFactor}{FormatCode}{ImmediateDestinationName.PadRight(23)}{ImmediateOriginName.PadRight(23)}{ReferenceCode.PadRight(8)}";
     }
 }

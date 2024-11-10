@@ -20,33 +20,34 @@ public class NachaFileGenerator
     public FileControlRecord fileControl;
     public void GenerateNachaFile()
     {
-        using (var writer = new StreamWriter(filePath + fileName))
+        string fullPath = Path.Combine(filePath, fileName);
+
+        using (var writer = new StreamWriter(fullPath))
         {
-            _logger.LogInformation("Generating NACHA file... {0}", filePath+fileName);
+            _logger.LogTrace("Generating NACHA file... {0}", filePath+fileName);
             writer.WriteLine(fileHeader.GenerateRecord());
-            _logger.LogInformation("File Header Record generated.");
+            _logger.LogTrace("File Header Record generated.");
             writer.WriteLine(batchHeader.GenerateRecord());
-            _logger.LogInformation("Batch Header Record generated.");
+            _logger.LogTrace("Batch Header Record generated.");
             int countEntryAddendumRecords = 0;
             foreach (var entryDetailRecord in entryDetailRecords)
             {
                 writer.WriteLine(entryDetailRecord.GenerateRecord());
-                _logger.LogInformation("Entry Detail Record generated.");
+                _logger.LogTrace("Entry Detail Record generated.");
 
                 if (entryDetailRecord.EntryAddendumRecord != null)
                 {
                     countEntryAddendumRecords++; // addendums have their own line for the pad file calculation
                     writer.WriteLine(entryDetailRecord.EntryAddendumRecord.GenerateRecord());
-                    _logger.LogInformation("Entry Addendum Record generated.");
+                    _logger.LogTrace("Entry Addendum Record generated.");
                 }
             }
             writer.WriteLine(batchControl.GenerateRecord());
-            _logger.LogInformation("Batch Control Record generated.");
+            _logger.LogTrace("Batch Control Record generated.");
             writer.WriteLine(fileControl.GenerateRecord());
-            _logger.LogInformation("File Control Record generated.");
+            _logger.LogTrace("File Control Record generated.");
             writer.Write(FileControlRecord.PadFile(entryDetailRecords.Count + countEntryAddendumRecords)); // Pad the file to 10 characters
-            _logger.LogInformation("File padded to 10 characters. {0}", entryDetailRecords.Count + countEntryAddendumRecords);  
-
+            _logger.LogTrace("File padded to 10 characters. EntryDetailRecords.Count {0} EntryAddendumRecordsCount {1}", entryDetailRecords.Count , countEntryAddendumRecords);  
         }
 
 
@@ -122,15 +123,16 @@ public class NachaFileGenerator
             TotalCreditAmount = 1000.00m,
             OriginatingDFI = "12345678"
         };
-        fileControl = new FileControlRecord
-        {
-            BatchCount = 1,
-            BlockCount = 1,
-            EntryHash = FileControlRecord.CalculateEntryHash(new List<string> { "011000011", "051000011", "061000011" }),
-            EntryAndAddendumCount = 5,
-            TotalDebitDollarAmount = 1000.00m,
-            TotalCreditDollarAmount = 1000.00m
+        fileControl = new FileControlRecord(
+        
+            1,
+            1,
+            5,
+            FileControlRecord.CalculateEntryHash(new List<string> { "011000011", "051000011", "061000011" }),
+            1000.00m,
+            1000.00m
 
-        };
+        );
+        
     }
 }
