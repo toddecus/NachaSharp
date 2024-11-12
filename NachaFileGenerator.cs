@@ -65,12 +65,16 @@ public class NachaFileGenerator
         );
 
         batchHeader = new BatchHeaderRecord
-        {
-            CompanyName = "MY COMPANY",
-            CompanyId = "1234567890",
-            EffectiveEntryDate = DateTime.Now.AddDays(1),
-            OriginatingDFI = "12345678"
-        };
+        (
+            "MY COMPANY",
+            "01",
+            "987654321",
+            "Payments",
+            DateTime.Now.AddDays(2), // Company Descriptive Date
+            DateTime.Now.AddDays(2), // Effective Entry Date
+            "12345678", // Originating DFI
+            1 // Batch number
+        );
         entryDetailRecords = new List<EntryDetailRecord>();
 
         entryDetailRecords.Add(new EntryDetailRecord
@@ -117,12 +121,16 @@ public class NachaFileGenerator
         });
 
         batchControl = new BatchControlRecord
-        {
-            EntryCount = 1,
-            TotalDebitAmount = 1000.00m,
-            TotalCreditAmount = 1000.00m,
-            OriginatingDFI = "12345678"
-        };
+        (
+            5,
+            BatchControlRecord.CalculateEntryHash(new List<string> { "01100001", "01100002", "01100003" }),
+            1000.00m,
+            1000.00m,
+            "987654321",
+            "",
+            "12345678",
+            1
+        );
         fileControl = new FileControlRecord(
         
             1,

@@ -6,7 +6,7 @@ public class FileControlRecord
 {
     public RecordTypeCode RecordTypeCode = RecordTypeCode.FileControl;
     //publcipublic string RecordTypeCode = "9";  // Fixed value for File Control
-    public required int BatchCount { get; set;}    // Total number of Batch Header Records 6 digits
+    public required int BatchCount { get; set; }    // Total number of Batch Header Records 6 digits
     public required int BlockCount;   // Number of 940-character blocks (10 records each) 6 digits
     public required int EntryAndAddendumCount;  // Total entry and entry addendum records 8 digitsj
     public required string EntryHash;  //Hash total of all routing numbers, using the last 10 digits (10 characters).
@@ -24,7 +24,7 @@ public class FileControlRecord
         TotalDebitDollarAmount = totalDebitDollarAmount;
         TotalCreditDollarAmount = totalCreditDollarAmount;
     }
-
+    /* todo: Consolidated this to an interface that both ControlRecords can use */
     public static string CalculateEntryHash(IEnumerable<string> routingNumbers)
     {
         long totalHash = routingNumbers

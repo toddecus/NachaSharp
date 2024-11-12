@@ -1,17 +1,58 @@
+using System.Diagnostics.CodeAnalysis;
 namespace NachaSharp; 
 public class BatchControlRecord
 {
-    public string RecordTypeCode = "8";  // Fixed value
-    public string ServiceClassCode = "200";  // Mixed debits and credits
-    public int EntryCount;
-    public decimal TotalDebitAmount;  // In cents
-    public decimal TotalCreditAmount;  // In cents
-    public string OriginatingDFI;
+     public RecordTypeCode RecordTypeCode = RecordTypeCode.BatchControl;  // Fixed value for batch control
+    public ServiceClassCode ServiceClassCode = ServiceClassCode.MixedDebitsAndCredits; // Mixed debits and credits
+    public required int EntryAndAddendumCount;
+    public required string EntryHash;  //Hash total of all routing numbers, using the last 10 digits (10 characters).
+    public required decimal TotalDebitAmount;  // In cents
+    public required decimal TotalCreditAmount;  // In cents
+    public required string CompanyIdentification; // Tax ID same as Field 4 in File Header Record = ImmediateOrigin
+    public string MessageAuthenticationCode; // Optional field
+    public readonly string Reserved = "".PadRight(6);  // Reserved field (empty)
+    public required string OriginatingDFI; // Routing number
+    public required int BatchNumber; // Batch number
     
+
+    [SetsRequiredMembers]
+    public BatchControlRecord(int entryAndAddendumCount, string entryHash, decimal totalDebitAmount, decimal totalCreditAmount, string companyIdentification, string messageAuthenticationCode, string originatingDFI, int batchNumber)
+    {
+        EntryAndAddendumCount = entryAndAddendumCount;
+        EntryHash = entryHash;
+        TotalDebitAmount = totalDebitAmount;
+        TotalCreditAmount = totalCreditAmount;
+        CompanyIdentification = companyIdentification;
+        MessageAuthenticationCode = messageAuthenticationCode;
+        OriginatingDFI = originatingDFI;
+        BatchNumber = batchNumber;
+    }
+
+
     public string GenerateRecord()
     {
-        return $"{RecordTypeCode}{ServiceClassCode.PadLeft(3)}{EntryCount.ToString().PadLeft(6, '0')}" +
-               $"{TotalDebitAmount.ToString("0000000000").PadLeft(10)}{TotalCreditAmount.ToString("0000000000").PadLeft(10)}" +
-               $"{OriginatingDFI.PadLeft(8)}".PadRight(94);
+        return $"{RecordTypeCode.ToStringValue()}" +
+               $"{ServiceClassCode.ToStringValue()}" +
+               $"{EntryAndAddendumCount.ToString().PadLeft(6, '0')}" +
+               $"{EntryHash.PadLeft(10, '0')}" +
+               $"{((int)(TotalDebitAmount * 100)).ToString().PadLeft(12, '0')}" +
+               $"{((int)(TotalCreditAmount * 100)).ToString().PadLeft(12, '0')}" +
+               $"{CompanyIdentification.PadLeft(10, '0')}" +
+               $"{MessageAuthenticationCode.PadRight(19)}" +
+               $"{Reserved}" + 
+               $"{OriginatingDFI.PadLeft(8, '0')}" +
+               $"{BatchNumber.ToString().PadLeft(7, '0')}"; 
+    }
+
+    /* todo: Consolidated this to an interface that both ControlRecords can use */
+    public static string CalculateEntryHash(IEnumerable<string> routingNumbers)
+    {
+        long totalHash = routingNumbers
+        .Select(r => long.Parse(r.Substring(0, 8))) // Get the first 8 digits of each routing number
+        .Sum();
+
+        // Convert total hash to string and get the last 10 digits
+        string entryHash = totalHash.ToString();
+        return entryHash.Length > 10 ? entryHash.Substring(entryHash.Length - 10) : entryHash.PadLeft(10, '0');
     }
 }

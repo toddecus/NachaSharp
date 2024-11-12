@@ -31,7 +31,8 @@ public class FileControlRecordTests
         Assert.Equal(entryHash, fileControlRecord.EntryHash);
         Assert.Equal(totalDebitEntryDollarAmount, fileControlRecord.TotalDebitDollarAmount);
         Assert.Equal(totalCreditEntryDollarAmount, fileControlRecord.TotalCreditDollarAmount);
-        String s = fileControlRecord.GenerateRecord();
+        //String s = fileControlRecord.GenerateRecord();
         Assert.Equal("9000001000001000000050234567890000000100000000000100000                                       ", fileControlRecord.GenerateRecord());
+        Assert.Equal(94, fileControlRecord.GenerateRecord().Length);
     }
 }

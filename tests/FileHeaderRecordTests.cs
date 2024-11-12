@@ -39,6 +39,8 @@ public class FileHeaderRecordTests
         Assert.Equal("094", fileHeaderRecord.RecordSize);
         Assert.Equal("10", fileHeaderRecord.BlockingFactor);
         Assert.Equal("1", fileHeaderRecord.FormatCode);
+        //string s = fileHeaderRecord.GenerateRecord();
         Assert.Equal("101 123456789 9876543212411062007A094101Destination Bank       Origin Business        88888888",fileHeaderRecord.GenerateRecord());
+        Assert.Equal(94, fileHeaderRecord.GenerateRecord().Length);
     }
 }
