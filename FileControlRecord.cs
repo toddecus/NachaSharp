@@ -42,8 +42,8 @@ public class FileControlRecord
                $"{BlockCount.ToString().PadLeft(6, '0')}" +
                $"{EntryAndAddendumCount.ToString().PadLeft(8, '0')}" +
                $"{EntryHash.PadLeft(10, '0')}" +
-               $"{((int)(TotalDebitDollarAmount * 100)).ToString().PadLeft(12, '0')}" +
-               $"{((int)(TotalCreditDollarAmount * 100)).ToString().PadLeft(12, '0')}" +
+               $"{TotalDebitDollarAmount.ToString("F2").Replace(".", "").PadLeft(12, '0')}" +
+               $"{TotalCreditDollarAmount.ToString("F2").Replace(".", "").PadLeft(12, '0')}" +
                $"{Reserved}";
     }
     /* The file must be a multiple of 10 records, so this method pads the file with 9s to reach that multiple

@@ -40,6 +40,7 @@ namespace NachaSharp
             Assert.Equal(effectiveEntryDate, batchHeaderRecord.EffectiveEntryDate);
             Assert.Equal(originatingDFI, batchHeaderRecord.OriginatingDFI);
             Assert.Equal(batchNumber, batchHeaderRecord.BatchNumber);
+            //string s = batchHeaderRecord.GenerateRecord();
             Assert.Equal("5200My Company      Optional Data        123456789CCDPayments  241106241106   1123456780000001", batchHeaderRecord.GenerateRecord());
             Assert.Equal(94, batchHeaderRecord.GenerateRecord().Length);
 

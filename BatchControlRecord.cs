@@ -35,8 +35,8 @@ public class BatchControlRecord
                $"{ServiceClassCode.ToStringValue()}" +
                $"{EntryAndAddendumCount.ToString().PadLeft(6, '0')}" +
                $"{EntryHash.PadLeft(10, '0')}" +
-               $"{((int)(TotalDebitAmount * 100)).ToString().PadLeft(12, '0')}" +
-               $"{((int)(TotalCreditAmount * 100)).ToString().PadLeft(12, '0')}" +
+               $"{TotalDebitAmount.ToString("F2").Replace(".", "").PadLeft(12, '0')}" +
+               $"{TotalCreditAmount.ToString("F2").Replace(".", "").PadLeft(12, '0')}" +
                $"{CompanyIdentification.PadLeft(10, '0')}" +
                $"{MessageAuthenticationCode.PadRight(19)}" +
                $"{Reserved}" + 

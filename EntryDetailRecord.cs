@@ -8,7 +8,7 @@ public class EntryDetailRecord
     public required string ReceivingDFIRoutingNumber; // First 8 digits of the routing number
     public required string CheckDigit; // Last digit of the routing number
     public required string ReceivingDFIAccountNumber; // Account number
-    public required decimal Amount; // In cents
+    public required decimal Amount; // in dollars
     public required string IndividualIdentificationNumber; // Can be a unique ID for the sender
     public required string IndividualName; // Name of the receiver
     public string DiscretionaryData =""; // Optional 2 characters
@@ -49,7 +49,7 @@ public class EntryDetailRecord
                $"{ReceivingDFIRoutingNumber.PadLeft(8, '0')}" +
                $"{CheckDigit}" +
                $"{ReceivingDFIAccountNumber.PadRight(17)}" +
-               $"{((int)(Amount) * 100).ToString().PadLeft(10, '0')}" +
+               $"{Amount.ToString("F2").Replace(".", "").PadLeft(10, '0')}" +
                $"{IndividualIdentificationNumber.PadRight(15)}" +
                $"{IndividualName.PadRight(22)}" +
                $"{DiscretionaryData.PadRight(2)}" +

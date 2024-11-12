@@ -20,7 +20,7 @@ public class EntryAddendumRecordTests
         Assert.Equal("7", entryAddendumRecord.RecordTypeCode.ToStringValue());
         Assert.Equal(paymentRelatedInformation, entryAddendumRecord.PaymentRelatedInformation);
         Assert.Equal(entryDetailSequenceNumber, entryAddendumRecord.EntryDetailSequenceNumber);
-        string s = entryAddendumRecord.GenerateRecord();
+        // string s = entryAddendumRecord.GenerateRecord();
         Assert.Equal("705Payment Info                                                                    00010000001", entryAddendumRecord.GenerateRecord());
         Assert.Equal(94, entryAddendumRecord.GenerateRecord().Length);
     }

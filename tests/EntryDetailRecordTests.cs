@@ -43,7 +43,7 @@ public class EntryDetailRecordTests
         Assert.Equal(traceNumber, entryDetailRecord.TraceNumber);
         Assert.Equal(discretionaryData, entryDetailRecord.DiscretionaryData);
         string s = entryDetailRecord.GenerateRecord();
-        Assert.Equal("6221234567891234567890123456 0000010000ID123456       John Doe              A10000000987654321", entryDetailRecord.GenerateRecord());
+        Assert.Equal("6221234567891234567890123456 0000010050ID123456       John Doe              A10000000987654321", entryDetailRecord.GenerateRecord());
         Assert.Equal(94, entryDetailRecord.GenerateRecord().Length);
     }
 }
