@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Extensions.Logging;
 
@@ -13,14 +15,21 @@ public class NachaFileGenerator
     public string filePath = "./outputFiles/";
     public string fileName = "nacha.txt";
 
-    public FileHeaderRecord fileHeader;
-    public BatchHeaderRecord batchHeader;
+    public FileHeaderRecord? fileHeader;
+    public BatchHeaderRecord? batchHeader;
     public List<EntryDetailRecord> entryDetailRecords = new List<EntryDetailRecord>();
-    public BatchControlRecord batchControl;
-    public FileControlRecord fileControl;
+    public BatchControlRecord? batchControl;
+    public FileControlRecord? fileControl;
     public void GenerateNachaFile()
     {
         string fullPath = Path.Combine(filePath, fileName);
+            _logger.LogTrace($"FileHeader{fileHeader}, BatchHeader{batchHeader}, BatchControl{batchControl},"+ 
+                $" and FileControl{fileControl} must be populated before generating the NACHA file.");
+        if(fileHeader == null || batchHeader == null || batchControl == null || fileControl == null)
+        {
+            throw new InvalidOperationException($"FileHeader{fileHeader}, BatchHeader{batchHeader}, BatchControl{batchControl},"+ 
+                $" and FileControl{fileControl} must be populated before generating the NACHA file.");
+        }
 
         using (var writer = new StreamWriter(fullPath))
         {
@@ -78,47 +87,51 @@ public class NachaFileGenerator
         entryDetailRecords = new List<EntryDetailRecord>();
 
         entryDetailRecords.Add(new EntryDetailRecord
-        {
-            TransactionCode = "27",  // Checking account debit
-            ReceivingDFIRoutingNumber = "01100001",
-            ReceivingDFIAccountNumber = "123456789",
-            Amount = 1000.00m,  // $500.00
-            ReceiverIdNumber = "123456789",
-            ReceiverName = "John Doe",
-            TraceNumber = "123456789000001",
-            EntryAddendumRecord = new EntryAddendumRecord
-            {
-                AddendaSequenceNumber = 1,
-                EntryDetailSequenceNumber = "1234567",
-                PaymentRelatedInformation = "Payment for invoice 12345"
-            }
-        });
+        (
+            TransactionCode.DebitChecking ,  // Checking account debit
+            "01100001",
+            "1",
+            "123456789",
+            500.00m,  // $500.00
+            "123456789",
+            "John Doe",
+            "123456789000001"
+        ));
+        entryDetailRecords[0].EntryAddendumRecord = new EntryAddendumRecord
+        (
+            "Payment for invoice 12345",
+            "9000001"
+        
+        );
+
         entryDetailRecords.Add(new EntryDetailRecord
-        {
-            TransactionCode = "22",  // Checking account credit
-            ReceivingDFIRoutingNumber = "01100002",
-            ReceivingDFIAccountNumber = "123456789",
-            Amount = 500.00m,  // $500.00
-            ReceiverName = "John Doe",
-            ReceiverIdNumber = "123456789",
-            TraceNumber = "123456789000001",
-            EntryAddendumRecord = new EntryAddendumRecord
-            {
-                AddendaSequenceNumber = 2,
-                EntryDetailSequenceNumber = "1234567",
-                PaymentRelatedInformation = "Payment for invoice 12345"
-            }
-        });
+        (
+            TransactionCode.DepositChecking,  // Checking account credit
+            "01100002",
+            "2",
+            "123456789",
+            500.00m,  // $500.00
+            "Jane Doe",
+            "123456789",
+            "123456789000002"
+        ));
+        entryDetailRecords[1].EntryAddendumRecord = new EntryAddendumRecord
+        (
+            "Payment for invoice 12346",
+            "9000002"
+        
+        );
         entryDetailRecords.Add(new EntryDetailRecord
-        {
-            TransactionCode = "22",  // Checking account credit
-            ReceivingDFIRoutingNumber = "01100003",
-            ReceivingDFIAccountNumber = "123456789",
-            Amount = 500.00m,  // $500.00
-            ReceiverName = "John Doe",
-            ReceiverIdNumber = "123456789",
-            TraceNumber = "123456789000001"
-        });
+        (
+            TransactionCode.DepositChecking ,  // Checking account credit
+            "01100003",
+            "3",
+            "123456789",
+            500.00m,  // $500.00
+            "Chris Doe",
+            "123456789",
+            "123456789000003"
+        ));
 
         batchControl = new BatchControlRecord
         (
