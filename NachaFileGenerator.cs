@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text;
 using Microsoft.Extensions.Logging;
 
 namespace NachaSharp;
@@ -8,63 +10,91 @@ public class NachaFileGenerator
 {
     private readonly ILogger<NachaFileGenerator> _logger;
 
-    public NachaFileGenerator(ILogger<NachaFileGenerator> logger)
-    {
-        _logger = logger;
-    }
-    public string filePath = "./outputFiles/";
-    public string fileName = "nacha.txt";
+    public required FileHeaderRecord FileHeader;
+    public List<Batch> Batches { get; } = new List<Batch>();
+    public required FileControlRecord FileControl;
 
-    public FileHeaderRecord? fileHeader;
-    public BatchHeaderRecord? batchHeader;
-    public List<EntryDetailRecord> entryDetailRecords = new List<EntryDetailRecord>();
-    public BatchControlRecord? batchControl;
-    public FileControlRecord? fileControl;
-    public void GenerateNachaFile()
+
+    [SetsRequiredMembers]
+    public NachaFileGenerator(FileHeaderRecord fileHeaderRecord, FileControlRecord fileControlRecord, ILogger<NachaFileGenerator> logger)
     {
+        FileHeader = fileHeaderRecord ?? throw new ArgumentNullException(nameof(fileHeaderRecord));
+        FileControl = fileControlRecord ?? throw new ArgumentNullException(nameof(fileControlRecord));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
+
+    [SetsRequiredMembers]
+    public NachaFileGenerator(FileHeaderRecord fileHeaderRecord, FileControlRecord fileControlRecord)
+    {
+        FileHeader = fileHeaderRecord ?? throw new ArgumentNullException(nameof(fileHeaderRecord));
+        FileControl = fileControlRecord ?? throw new ArgumentNullException(nameof(fileControlRecord));
+        using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+                builder.SetMinimumLevel(LogLevel.Warning);    
+            });
+        _logger = loggerFactory.CreateLogger<NachaSharp.NachaFileGenerator>();
+    }
+
+    /*
+    * This method generates the NACHA file as a string with each 94-character record on a new line and file padded with lines of 9 to make
+    * the file a multiple of 10 records.
+    */
+    public string ToStringValue()
+    {
+        StringBuilder batchesString = new StringBuilder();
+        int entryAndAddendumCount = 0;
+        foreach (var batch in Batches)
+        {
+            batchesString.Append( batch.GenerateRecord());
+            entryAndAddendumCount += batch.ControlRecord.EntryAndAddendumCount;
+        }
+        return string.Concat(
+            FileHeader.GenerateRecord(), 
+            batchesString.ToString(), 
+            FileControl.GenerateRecord(),  
+            FileControlRecord.GetFileNinePad(entryAndAddendumCount, Batches.Count)
+        );
+    }
+    public void GenerateTestNachaFile()
+    {
+        string filePath = "./outputFiles/";
+        string fileName = "nacha.txt";
         string fullPath = Path.Combine(filePath, fileName);
 
-        _logger.LogTrace($"FileHeader{fileHeader}, BatchHeader{batchHeader}, BatchControl{batchControl}," +
-            $" and FileControl{fileControl} must be populated before generating the NACHA file.");
-        if (fileHeader == null || batchHeader == null || batchControl == null || fileControl == null)
+        _logger.LogTrace($"FileHeader{FileHeader}, BatchHeader{Batches[0].HeaderRecord}, BatchControl{Batches[0].ControlRecord}," +
+            $" and FileControl{FileControl} must be populated before generating the NACHA file.");
+        if (FileHeader == null || Batches[0].HeaderRecord == null || Batches[0].ControlRecord == null || FileControl == null)
         {
-            throw new InvalidOperationException($"FileHeader{fileHeader}, BatchHeader{batchHeader}, BatchControl{batchControl}," +
-                $" and FileControl{fileControl} must be populated before generating the NACHA file.");
+            throw new InvalidOperationException($"FileHeader{FileHeader}, BatchHeader{Batches[0].HeaderRecord}, BatchControl{Batches[0].ControlRecord}," +
+                $" and FileControl{FileControl} must be populated before generating the NACHA file.");
         }
 
         using (var writer = new StreamWriter(fullPath))
         {
             _logger.LogTrace("Generating NACHA file... {0}", filePath + fileName);
-            writer.WriteLine(fileHeader.GenerateRecord());
+            writer.Write(FileHeader.GenerateRecord() + Environment.NewLine);
             _logger.LogTrace("File Header Record generated.");
-            writer.WriteLine(batchHeader.GenerateRecord());
-            _logger.LogTrace("Batch Header Record generated.");
-            int countEntryAddendumRecords = 0;
-            foreach (var entryDetailRecord in entryDetailRecords)
-            {
-                writer.WriteLine(entryDetailRecord.GenerateRecord());
-                _logger.LogTrace("Entry Detail Record generated.");
 
-                if (entryDetailRecord.EntryAddendumRecord != null)
-                {
-                    countEntryAddendumRecords++; // addendums have their own line for the pad file calculation
-                    writer.WriteLine(entryDetailRecord.EntryAddendumRecord.GenerateRecord());
-                    _logger.LogTrace("Entry Addendum Record generated.");
-                }
+             int entryAndAddendumCount = 0;
+            foreach (var batch in Batches)
+            {
+                writer.Write(batch.GenerateRecord());
+                _logger.LogTrace("Batch and Entry Records generated for BatchNumber {0}.", batch.HeaderRecord.BatchNumber);
+              entryAndAddendumCount += batch.ControlRecord.EntryAndAddendumCount;
             }
-            writer.WriteLine(batchControl.GenerateRecord());
-            _logger.LogTrace("Batch Control Record generated.");
-            writer.WriteLine(fileControl.GenerateRecord());
+
+            writer.Write(FileControl.GenerateRecord() + Environment.NewLine);
             _logger.LogTrace("File Control Record generated.");
-            writer.Write(FileControlRecord.PadFile(entryDetailRecords.Count + countEntryAddendumRecords)); // Pad the file to 10 characters
-            _logger.LogTrace("File padded to 10 characters. EntryDetailRecords.Count {0} EntryAddendumRecordsCount {1}", entryDetailRecords.Count, countEntryAddendumRecords);
+            writer.Write(FileControlRecord.GetFileNinePad(entryAndAddendumCount, Batches.Count  )); // Pad the file to 10 characters
+            _logger.LogTrace("File padded to 10 characters. entryAndAddendumCount {0} batchCount {1}", entryAndAddendumCount, Batches.Count);
         }
 
 
     }
     public void PopulateTestData()
     {
-        fileHeader = new FileHeaderRecord
+        FileHeader = new FileHeaderRecord
         (
            "DEST BANK",
             "123456789",
@@ -74,7 +104,7 @@ public class NachaFileGenerator
 
         );
 
-        batchHeader = new BatchHeaderRecord
+        BatchHeaderRecord batchHeader = new BatchHeaderRecord
         (
             "MY COMPANY",
             "01",
@@ -85,7 +115,7 @@ public class NachaFileGenerator
             "12345678", // Originating DFI
             1 // Batch number
         );
-        entryDetailRecords = new List<EntryDetailRecord>();
+        List<EntryDetailRecord> entryDetailRecords = new List<EntryDetailRecord>();
 
         entryDetailRecords.Add(new EntryDetailRecord
         (
@@ -134,7 +164,7 @@ public class NachaFileGenerator
             "123456789000003"
         ));
 
-        batchControl = new BatchControlRecord
+        BatchControlRecord batchControl = new BatchControlRecord
         (
             5,
             BatchControlRecord.CalculateEntryHash(new List<string> { "01100001", "01100002", "01100003" }),
@@ -145,7 +175,9 @@ public class NachaFileGenerator
             "12345678",
             1
         );
-        fileControl = new FileControlRecord(
+        Batches.Add(new Batch(batchHeader, batchControl, entryDetailRecords));
+
+        FileControl = new FileControlRecord(
 
             1,
             1,

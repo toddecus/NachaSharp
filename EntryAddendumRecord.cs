@@ -17,10 +17,12 @@ public class EntryAddendumRecord
     }
     public string GenerateRecord()
     {
-        return $"{RecordTypeCode.ToStringValue()}" +
-               $"{AddendumTypeCode.ToStringValue()}" +
-               $"{PaymentRelatedInformation.PadRight(80)}" +
-               $"{AddendaSequenceNumber.ToString().PadLeft(4, '0')}" +
-               $"{EntryDetailSequenceNumber.PadLeft(7, '0')}";
+        return string.Concat(
+            RecordTypeCode.ToStringValue() +
+            AddendumTypeCode.ToStringValue() +
+            PaymentRelatedInformation.PadRight(80) +
+            AddendaSequenceNumber.ToString().PadLeft(4, '0') +
+            EntryDetailSequenceNumber.PadLeft(7, '0')
+        );
     }
 }

@@ -39,9 +39,23 @@ public class FileHeaderRecord
         ImmediateOrigin = immediateOrigin;
         ReferenceCode = referenceCode;
     }
-
     public string GenerateRecord()
     {
-        return $"{RecordTypeCode.ToStringValue()}{PriorityCode}{ImmediateDestination.PadLeft(10, ' ')}{ImmediateOrigin.PadLeft(10, ' ')}{FileCreationDate:yyMMdd}{FileCreationTime:hhmm}{FileIdModifier}{RecordSize}{BlockingFactor}{FormatCode}{ImmediateDestinationName.PadRight(23)}{ImmediateOriginName.PadRight(23)}{ReferenceCode.PadRight(8)}";
+        return string.Concat(
+            RecordTypeCode.ToStringValue(),
+            PriorityCode,
+            ImmediateDestination.PadLeft(10, ' '),
+            ImmediateOrigin.PadLeft(10, ' '),
+            FileCreationDate.ToString("yyMMdd"),
+            FileCreationTime.ToString("hhmm"),
+            FileIdModifier,
+            RecordSize,
+            BlockingFactor,
+            FormatCode,
+            ImmediateDestinationName.PadRight(23),
+            ImmediateOriginName.PadRight(23),
+            ReferenceCode.PadRight(8),
+            Environment.NewLine
+        );
     }
 }

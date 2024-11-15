@@ -44,16 +44,18 @@ public class EntryDetailRecord
 
     public string GenerateRecord()
     {
-        return $"{RecordTypeCode.ToStringValue()}" +
-               $"{TransactionCode.ToStringValue()}" +
-               $"{ReceivingDFIRoutingNumber.PadLeft(8, '0')}" +
-               $"{CheckDigit}" +
-               $"{ReceivingDFIAccountNumber.PadRight(17)}" +
-               $"{Amount.ToString("F2").Replace(".", "").PadLeft(10, '0')}" +
-               $"{IndividualIdentificationNumber.PadRight(15)}" +
-               $"{IndividualName.PadRight(22)}" +
-               $"{DiscretionaryData.PadRight(2)}" +
-               $"{AddendumRecordIndicator}" +
-               $"{TraceNumber.PadLeft(15, '0')}";
+        return string.Concat( 
+            RecordTypeCode.ToStringValue() +
+            TransactionCode.ToStringValue() +
+            ReceivingDFIRoutingNumber.PadLeft(8, '0') +
+            CheckDigit +
+            ReceivingDFIAccountNumber.PadRight(17) +
+            Amount.ToString("F2").Replace(".", "").PadLeft(10, '0') +
+            IndividualIdentificationNumber.PadRight(15) +
+            IndividualName.PadRight(22) +
+            DiscretionaryData.PadRight(2) +
+            AddendumRecordIndicator +
+            TraceNumber.PadLeft(15, '0')
+        );
     }
 }

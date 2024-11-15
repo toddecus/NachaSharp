@@ -29,8 +29,23 @@ public class BatchHeaderRecord
         BatchNumber = batchNumber;
     }
 
+        //return $"{RecordTypeCode.ToStringValue()}{ServiceClassCode.ToStringValue()}{CompanyName.PadRight(16)}{CompanyDiscretionaryData.PadRight(20)}{CompanyIdentification.PadLeft(10)}{StandardEntryClassCode.ToStringValue()}{CompanyEntryDescription.PadRight(10)}{CompanyDescriptiveDate:yyMMdd}{EffectiveEntryDate:yyMMdd}   {OriginatorStatusCode}{OriginatingDFI.PadRight(8)}{BatchNumber.ToString().PadLeft(7, '0')}";
     public string GenerateRecord()
     {
-        return $"{RecordTypeCode.ToStringValue()}{ServiceClassCode.ToStringValue()}{CompanyName.PadRight(16)}{CompanyDiscretionaryData.PadRight(20)}{CompanyIdentification.PadLeft(10)}{StandardEntryClassCode.ToStringValue()}{CompanyEntryDescription.PadRight(10)}{CompanyDescriptiveDate:yyMMdd}{EffectiveEntryDate:yyMMdd}   {OriginatorStatusCode}{OriginatingDFI.PadRight(8)}{BatchNumber.ToString().PadLeft(7, '0')}";
+        return string.Concat(
+            RecordTypeCode.ToStringValue(),
+            ServiceClassCode.ToStringValue(),
+            CompanyName.PadRight(16),
+            CompanyDiscretionaryData.PadRight(20),
+            CompanyIdentification.PadLeft(10),
+            StandardEntryClassCode.ToStringValue(),
+            CompanyEntryDescription.PadRight(10),
+            CompanyDescriptiveDate.ToString("yyMMdd"),
+            EffectiveEntryDate.ToString("yyMMdd"),
+            "   ",
+            OriginatorStatusCode,
+            OriginatingDFI.PadRight(8),
+            BatchNumber.ToString().PadLeft(7, '0')
+        );
     }
 }

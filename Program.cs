@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics.CodeAnalysis;
 public class Program
 {
     static void Main(string[] args)
@@ -12,7 +13,7 @@ public class Program
                 builder.SetMinimumLevel(LogLevel.Trace);
             });
         var logger = loggerFactory.CreateLogger<NachaSharp.NachaFileGenerator>();
-        logger.LogTrace("Starting NACHA file generation...");
+        logger.LogTrace("Starting NACHA file main test file generation...");
 
         try
         {
@@ -27,16 +28,22 @@ public class Program
                 Console.WriteLine($"Deleted existing file: {fullPath}");
             }
             // Instantiate the NACHA file generator
-            var nachaFileGenerator = new NachaFileGenerator(logger);
+            var nachaFileGenerator = new NachaFileGenerator(
+                new FileHeaderRecord("123456789", "987654321", "Company Name", "Company Name", "12345678"),
+                new FileControlRecord(0, 0, 0, "", 1.00m , 1.00m), 
+                logger); 
 
-            // Generate the NACHA file
+            // Generate the test NACHA file
             nachaFileGenerator.PopulateTestData();
             logger.LogTrace("Test data populated!");
         
-            nachaFileGenerator.GenerateNachaFile();
+            nachaFileGenerator.GenerateTestNachaFile();
 
 
-            logger.LogTrace("NACHA file generated successfully, look for a nacha.txt!");
+            logger.LogTrace("NACHA file generated successfully, look for a {0}", filePath + fileName);
+            logger.LogTrace("The file should look like this:"+Environment.NewLine); 
+            logger.LogTrace("{0}",nachaFileGenerator.ToStringValue());
+            logger.LogTrace("vi {0}!", filePath + fileName);
         }
         catch (Exception ex)
         {
