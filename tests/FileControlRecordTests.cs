@@ -33,6 +33,6 @@ public class FileControlRecordTests
         Assert.Equal(totalCreditEntryDollarAmount, fileControlRecord.TotalCreditDollarAmount);
         //String s = fileControlRecord.GenerateRecord();
         Assert.Equal("9000001000001000000050234567890000000100000000000100000                                       " + Environment.NewLine, fileControlRecord.GenerateRecord());
-        Assert.Equal(94, fileControlRecord.GenerateRecord().Length);
+        Assert.Equal(95, fileControlRecord.GenerateRecord().Length);
     }
 }
