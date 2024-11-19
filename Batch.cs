@@ -18,6 +18,10 @@ namespace NachaSharp
 
         public string GenerateRecord()
         {
+            if(EntryDetailRecords.Count == 0)
+            {
+                return "ERROR: Invalid Batch No entries to generate.";
+            }
             var batchString = HeaderRecord.GenerateRecord() + Environment.NewLine;
 
             foreach (var entry in EntryDetailRecords)

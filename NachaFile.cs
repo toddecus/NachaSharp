@@ -11,7 +11,7 @@ public class NachaFile
     private readonly ILogger<NachaFile> _logger;
 
     public required FileHeaderRecord FileHeader;
-    public List<Batch> Batches { get; } = new List<Batch>();
+    public List<Batch> Batches { get; } = new List<Batch>(); // List of batches 1 or more
     public required FileControlRecord FileControl;
 
 
@@ -42,6 +42,10 @@ public class NachaFile
     */
     public string ToStringValue()
     {
+        if(Batches.Count == 0)
+        {
+            return "ERROR: Invalid Natcha File No batches to generate.";
+        }
         StringBuilder batchesString = new StringBuilder();
         int entryAndAddendumCount = 0;
         foreach (var batch in Batches)
