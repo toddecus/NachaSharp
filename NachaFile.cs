@@ -6,9 +6,9 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 
 namespace NachaSharp;
-public class NachaFileGenerator
+public class NachaFile
 {
-    private readonly ILogger<NachaFileGenerator> _logger;
+    private readonly ILogger<NachaFile> _logger;
 
     public required FileHeaderRecord FileHeader;
     public List<Batch> Batches { get; } = new List<Batch>();
@@ -16,7 +16,7 @@ public class NachaFileGenerator
 
 
     [SetsRequiredMembers]
-    public NachaFileGenerator(FileHeaderRecord fileHeaderRecord, FileControlRecord fileControlRecord, ILogger<NachaFileGenerator> logger)
+    public NachaFile(FileHeaderRecord fileHeaderRecord, FileControlRecord fileControlRecord, ILogger<NachaFile> logger)
     {
         FileHeader = fileHeaderRecord ?? throw new ArgumentNullException(nameof(fileHeaderRecord));
         FileControl = fileControlRecord ?? throw new ArgumentNullException(nameof(fileControlRecord));
@@ -24,7 +24,7 @@ public class NachaFileGenerator
     }
 
     [SetsRequiredMembers]
-    public NachaFileGenerator(FileHeaderRecord fileHeaderRecord, FileControlRecord fileControlRecord)
+    public NachaFile(FileHeaderRecord fileHeaderRecord, FileControlRecord fileControlRecord)
     {
         FileHeader = fileHeaderRecord ?? throw new ArgumentNullException(nameof(fileHeaderRecord));
         FileControl = fileControlRecord ?? throw new ArgumentNullException(nameof(fileControlRecord));
@@ -33,7 +33,7 @@ public class NachaFileGenerator
                 builder.AddConsole();
                 builder.SetMinimumLevel(LogLevel.Warning);    
             });
-        _logger = loggerFactory.CreateLogger<NachaSharp.NachaFileGenerator>();
+        _logger = loggerFactory.CreateLogger<NachaSharp.NachaFile>();
     }
 
     /*

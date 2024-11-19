@@ -12,7 +12,7 @@ public class Program
                 builder.AddConsole();
                 builder.SetMinimumLevel(LogLevel.Trace);
             });
-        var logger = loggerFactory.CreateLogger<NachaSharp.NachaFileGenerator>();
+        var logger = loggerFactory.CreateLogger<NachaSharp.NachaFile>();
         logger.LogTrace("Starting NACHA file main test file generation...");
 
         try
@@ -28,7 +28,7 @@ public class Program
                 Console.WriteLine($"Deleted existing file: {fullPath}");
             }
             // Instantiate the NACHA file generator
-            var nachaFileGenerator = new NachaFileGenerator(
+            var nachaFileGenerator = new NachaFile(
                 new FileHeaderRecord("123456789", "987654321", "Company Name", "Company Name", "12345678"),
                 new FileControlRecord(0, 0, 0, "", 1.00m , 1.00m), 
                 logger); 
@@ -38,8 +38,6 @@ public class Program
             logger.LogTrace("Test data populated!");
         
             nachaFileGenerator.GenerateTestNachaFile();
-
-
             logger.LogTrace("NACHA file generated successfully, look for a {0}", filePath + fileName);
             logger.LogTrace("The file should look like this:"+Environment.NewLine); 
             logger.LogTrace("{0}",nachaFileGenerator.ToStringValue());

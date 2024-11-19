@@ -20,13 +20,15 @@ dotnet test
 dotnet run
 
 Usage in Code:
-var nachaFileGenerator = new NachaFileGenerator();
+var nachaFile = new NachaFile();
 nachaFileGenerator
 
 ```
 Features
 Generate Nacha files
 Supports file headers, batch headers, and entry details and Addendums, along with BatchControl and File Control and finally padding for 10 block
+Batch has a collection of EntryDetailRecords that may or may not have Addendums to them (2 lines)
+A file can contain multiple batches 
 
 Requirements
 .NET 8.0 or later
