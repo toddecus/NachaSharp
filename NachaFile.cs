@@ -93,7 +93,7 @@ public class NachaFile
                 routingNumbers.Add(entry.ReceivingDFI.ToString());
             }
         }
-        FileControl.EntryAndAddendumCount += entryCounter;
+        FileControl.EntryAndAddendumCount = entryCounter;
         FileControl.BlockCount = FileControlRecord.CalculateBlockCount(entryCounter, FileControl.BatchCount);
         FileControl.EntryHash = FileControlRecord.CalculateEntryHash(routingNumbers);
     }

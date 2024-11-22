@@ -38,7 +38,7 @@ public class BatchControlRecord
             EntryHash.PadLeft(10, '0') +
             TotalDebitAmount.ToString("F2").Replace(".", "").PadLeft(12, '0') +
             TotalCreditAmount.ToString("F2").Replace(".", "").PadLeft(12, '0') +
-            CompanyIdentification.PadLeft(10, '0') +
+            CompanyIdentification.PadLeft(10, ' ') +
             MessageAuthenticationCode.PadRight(19) +
             Reserved + 
             OriginatingDFI +
