@@ -12,11 +12,11 @@ namespace NachaSharp
             // Arrange
             string companyName = "My Company";
             string companyDiscretionaryData = "Optional Data";
-            string companyIdentification = "123456789";
-            string companyEntryDescription = "Payments";
+            string companyIdentification = " 072000805";
+            string companyEntryDescription = "PAYMENTS";
             DateTime companyDescriptiveDate = new DateTime(2024, 11, 06);
             DateTime effectiveEntryDate = new DateTime(2024, 11, 06);
-            string originatingDFI = "12345678";
+            DFINumber originatingDFI = new DFINumber("07100050");
             int batchNumber = 1;
 
             // Act
@@ -41,7 +41,7 @@ namespace NachaSharp
             Assert.Equal(originatingDFI, batchHeaderRecord.OriginatingDFI);
             Assert.Equal(batchNumber, batchHeaderRecord.BatchNumber);
             //string s = batchHeaderRecord.GenerateRecord();
-            Assert.Equal("5200My Company      Optional Data        123456789CCDPayments  241106241106   1123456780000001", batchHeaderRecord.GenerateRecord());
+            Assert.Equal("5200My Company      Optional Data        072000805CCDPAYMENTS  241106241106   1071000500000001", batchHeaderRecord.GenerateRecord());
             Assert.Equal(94, batchHeaderRecord.GenerateRecord().Length);
 
         }

@@ -29,8 +29,8 @@ public class Program
             }
             // Instantiate the NACHA file generator
             var nachaFileGenerator = new NachaFile(
-                new FileHeaderRecord("123456789", "987654321", "Company Name", "Company Name", "12345678"),
-                new FileControlRecord(0, 0, 0, "", 1.00m , 1.00m), 
+                new FileHeaderRecord("La Salle Bank N.A.",new ACHRoutingNumber("071000505"), "YourCompany Name","072000805","12345678"),
+                new FileControlRecord(0, 0, 0, "", 0.00m , 0.00m), 
                 logger); 
 
             // Generate the test NACHA file
@@ -39,9 +39,8 @@ public class Program
         
             nachaFileGenerator.GenerateTestNachaFile();
             logger.LogTrace("NACHA file generated successfully, look for a {0}", filePath + fileName);
-            logger.LogTrace("The file should look like this:"+Environment.NewLine); 
-            logger.LogTrace("{0}",nachaFileGenerator.ToStringValue());
-            logger.LogTrace("vi {0}!", filePath + fileName);
+            logger.LogTrace("The file should look like this:"+ Environment.NewLine+"{0}",nachaFileGenerator.ToStringValue());
+            logger.LogTrace("vi {0}", filePath + fileName);
         }
         catch (Exception ex)
         {

@@ -19,3 +19,5 @@
 - Avoid suggestions related to frontend frameworks like React or Angular, as they’re outside the scope of my work.
 - If using libraries or frameworks, prioritize those commonly used in the .NET ecosystem.
 - Use `ILogger` for logging in ASP.NET Core applications instead of `Console.WriteLine`.
+- DFI Depository Financial Institution A general term referring to any bank or financial institution that accepts deposits and participates in the ACH network 8 digit ACH number, which is padded left with 0's.
+- Routing number is DFI + a checksum digit

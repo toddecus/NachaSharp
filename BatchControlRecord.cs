@@ -11,12 +11,12 @@ public class BatchControlRecord
     public required string CompanyIdentification; // Tax ID same as Field 4 in File Header Record = ImmediateOrigin
     public string MessageAuthenticationCode; // Optional field
     public readonly string Reserved = "".PadRight(6);  // Reserved field (empty)
-    public required string OriginatingDFI; // Routing number
+    public required DFINumber OriginatingDFI; // Routing number
     public required int BatchNumber; // Batch number
     
 
     [SetsRequiredMembers]
-    public BatchControlRecord(int entryAndAddendumCount, string entryHash, decimal totalDebitAmount, decimal totalCreditAmount, string companyIdentification, string messageAuthenticationCode, string originatingDFI, int batchNumber)
+    public BatchControlRecord(int entryAndAddendumCount, string entryHash, decimal totalDebitAmount, decimal totalCreditAmount, string companyIdentification, string messageAuthenticationCode, DFINumber originatingDFI, int batchNumber)
     {
         EntryAndAddendumCount = entryAndAddendumCount;
         EntryHash = entryHash;
@@ -41,7 +41,7 @@ public class BatchControlRecord
             CompanyIdentification.PadLeft(10, '0') +
             MessageAuthenticationCode.PadRight(19) +
             Reserved + 
-            OriginatingDFI.PadLeft(8, '0') +
+            OriginatingDFI +
             BatchNumber.ToString().PadLeft(7, '0')
         ); 
     }

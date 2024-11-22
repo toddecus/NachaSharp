@@ -2,7 +2,7 @@
 
 This is a C# library for writing out Nacha files. Maybe someday I will include reading in... doubt it. In reality, I am learning C# AND testing out GitHub + GitHub Copilot. Buyer Beware!
 
-The detailed documentation file for the format I found: [ChoETL.NACHA](https://github.com/Cinchoo/ChoETL.NACHA). I don't know anything about the ETL tool and my needs were far less than a whole ETL thing....
+The detailed documentation file for the format I found: Old National Bank https://www.oldnational.com/ 
 
 ## Installation
 

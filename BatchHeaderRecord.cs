@@ -1,4 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Text.RegularExpressions;
+
 namespace NachaSharp; 
 public class BatchHeaderRecord
 {
@@ -13,12 +15,32 @@ public class BatchHeaderRecord
     public required string CompanyEntryDescription; // Payment description of the transaction on the bank statement 
     public required DateTime CompanyDescriptiveDate; // The date you choose to identify the transactions. This date may be printed on the participants’ bank statement by the Receiving Financial Institution.
     public required DateTime EffectiveEntryDate; // Dates posted to the target account
-    public required string OriginatingDFI; // Routing number
+    public required DFINumber OriginatingDFI; // Routing number
     public required int BatchNumber; // Batch number
 
-    [SetsRequiredMembers]    
-    public BatchHeaderRecord(string companyName, string companyDiscretionaryData, string companyIdentification, string companyEntryDescription, DateTime companyDescriptiveDate, DateTime effectiveEntryDate, string originatingDFI, int batchNumber)
+    [SetsRequiredMembers]
+    public BatchHeaderRecord(string companyName, string companyDiscretionaryData, string companyIdentification, string companyEntryDescription, DateTime companyDescriptiveDate, DateTime effectiveEntryDate, DFINumber originatingDFI, int batchNumber)
     {
+        if (string.IsNullOrWhiteSpace(companyName) || companyName.Length > 16)
+            throw new ArgumentException("Company name cannot be null or empty.", nameof(companyName));
+        if (companyDiscretionaryData == null)
+        {
+            companyDiscretionaryData = "";
+        }
+        if (companyDiscretionaryData.Length > 20 || !Regex.IsMatch(companyDiscretionaryData, @"^[a-zA-Z0-9 ]*$"))
+            throw new ArgumentException("Company identification cannot be null or empty and can contain only alpha numeric characters ^[a-zA-Z0-9 ]*$", nameof(companyIdentification));
+        if (companyEntryDescription == null )
+        {
+            companyEntryDescription = ""; 
+        }
+        companyEntryDescription = companyEntryDescription.ToUpperInvariant();
+        if(companyEntryDescription.Length > 10 || !Regex.IsMatch(companyEntryDescription, @"^[A-Z0-9 ]*$"))
+            throw new ArgumentException("Company entry description cannot be null or empty and can contain only alpha numeric characters ^[A-Z0-9 ]*$", nameof(companyEntryDescription));
+        if (batchNumber <= 0)
+            throw new ArgumentException("Batch number must be greater than zero.", nameof(batchNumber));
+        if(originatingDFI == null)
+            throw new ArgumentNullException(nameof(originatingDFI), "OriginatingDFI cannot be null");
+
         CompanyName = companyName;
         CompanyDiscretionaryData = companyDiscretionaryData;
         CompanyIdentification = companyIdentification;
@@ -44,7 +66,7 @@ public class BatchHeaderRecord
             EffectiveEntryDate.ToString("yyMMdd"),
             "   ",
             OriginatorStatusCode,
-            OriginatingDFI.PadRight(8),
+            OriginatingDFI,
             BatchNumber.ToString().PadLeft(7, '0')
         );
     }

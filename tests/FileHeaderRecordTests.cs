@@ -1,6 +1,5 @@
 using System;
 using Xunit;
-using NachaSharp;
 namespace NachaSharp;
 
 public class FileHeaderRecordTests
@@ -9,15 +8,15 @@ public class FileHeaderRecordTests
     public void Constructor_ShouldInitializeFieldsCorrectly()
     {
         // Arrange
-        string immediateDestination = "123456789";
-        string immediateOrigin = "987654321";
+        ACHRoutingNumber immediateDestinationRoutingNumber = new ACHRoutingNumber("071000505");
+        string immediateOrigin = "072000805";
         string immediateDestinationName = "Destination Bank";
         string immediateOriginName = "Origin Business";
         string referenceCode = "88888888";
 
         // Act
         var fileHeaderRecord = new FileHeaderRecord(immediateDestinationName,
-                                                    immediateDestination,
+                                                    immediateDestinationRoutingNumber,
                                                     immediateOriginName,
                                                     immediateOrigin,
                                                     referenceCode
@@ -29,7 +28,7 @@ public class FileHeaderRecordTests
         
         // Assert
         Assert.Equal(immediateDestinationName, fileHeaderRecord.ImmediateDestinationName);
-        Assert.Equal(immediateDestination, fileHeaderRecord.ImmediateDestination);
+        Assert.Equal(immediateDestinationRoutingNumber, fileHeaderRecord.ImmediateDestinationRoutingNumber);
         Assert.Equal(immediateOriginName, fileHeaderRecord.ImmediateOriginName);
         Assert.Equal(immediateOrigin, fileHeaderRecord.ImmediateOrigin);
         Assert.Equal(referenceCode, fileHeaderRecord.ReferenceCode);
@@ -39,8 +38,8 @@ public class FileHeaderRecordTests
         Assert.Equal("094", fileHeaderRecord.RecordSize);
         Assert.Equal("10", fileHeaderRecord.BlockingFactor);
         Assert.Equal("1", fileHeaderRecord.FormatCode);
-        //string s = fileHeaderRecord.GenerateRecord();
-        Assert.Equal("101 123456789 9876543212411062007A094101Destination Bank       Origin Business        88888888" + Environment.NewLine,fileHeaderRecord.GenerateRecord());
+        string s = fileHeaderRecord.GenerateRecord();
+        Assert.Equal("101 071000505 0720008052411062007A094101Destination Bank       Origin Business        88888888" + Environment.NewLine,fileHeaderRecord.GenerateRecord());
         Assert.Equal(95, fileHeaderRecord.GenerateRecord().Length);
     }
 }

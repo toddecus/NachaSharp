@@ -1,17 +1,19 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.ConstrainedExecution;
+using System;
+using System.Numerics;
 
 namespace NachaSharp;
 public class FileControlRecord
 {
     public RecordTypeCode RecordTypeCode = RecordTypeCode.FileControl;
     //publcipublic string RecordTypeCode = "9";  // Fixed value for File Control
-    public required int BatchCount;     // Total number of Batch Header Records 6 digits
-    public required int BlockCount;   // Number of 940-character blocks (10 records each) 6 digits
-    public required int EntryAndAddendumCount;  // Total entry and entry addendum records 8 digitsj
-    public required string EntryHash;  //Hash total of all routing numbers, using the last 10 digits (10 characters).
-    public required decimal TotalDebitDollarAmount;  // Total debits in the file 12 digits
-    public required decimal TotalCreditDollarAmount;  // Total credits in the file 12 digits
+    public required int BatchCount = 0;     // Total number of Batch Header Records 6 digits
+    public required int BlockCount =0;   // Number of 940-character blocks (10 records each) 6 digits
+    public required int EntryAndAddendumCount = 0;  // Total entry and entry addendum records 8 digitsj
+    public required string EntryHash = "";  //Hash total of all routing numbers, using the last 10 digits (10 characters).
+    public required decimal TotalDebitDollarAmount = 0.00m;  // Total debits in the file 12 digits
+    public required decimal TotalCreditDollarAmount = 0.00m;  // Total credits in the file 12 digits
     public readonly string Reserved = "".PadRight(39);  // Reserved field (empty)
 
     [SetsRequiredMembers]
@@ -20,11 +22,14 @@ public class FileControlRecord
         BatchCount = batchCount;
         BlockCount = blockCount;
         EntryAndAddendumCount = entryAddendumCount;
+        if( entryHash == null)
+        {
+            entryHash = "";
+        }
         EntryHash = entryHash;
         TotalDebitDollarAmount = totalDebitDollarAmount;
         TotalCreditDollarAmount = totalCreditDollarAmount;
     }
-    /* todo: Consolidated this to an interface that both ControlRecords can use */
     public static string CalculateEntryHash(IEnumerable<string> routingNumbers)
     {
         long totalHash = routingNumbers
@@ -35,6 +40,7 @@ public class FileControlRecord
         string entryHash = totalHash.ToString();
         return entryHash.Length > 10 ? entryHash.Substring(entryHash.Length - 10) : entryHash.PadLeft(10, '0');
     }
+    /* todo: Consolidated this to an interface that both ControlRecords can use */
     public string GenerateRecord()
     {
         return string.Concat(
@@ -49,29 +55,17 @@ public class FileControlRecord
             Environment.NewLine
         );
     }
-    /* The file must be a multiple of 10 records, so this method pads the file with 9s to reach that multiple
-        entryRecordCount should be EntryDetailRecordCount + EntryAddendumRecordCount */
-    public static string GetFileNinePad(int entryRecordCount, int batchCount)
-    {
-        string results = "";
-        int fileRecordCount = 2; // File Header and File Control
-        int batchesCount = 2 * batchCount ; // Batch Header and Batch Control
-        int totalCount = entryRecordCount + fileRecordCount + batchesCount;
-        int padsNeeded = 10 - (totalCount % 10);
-        if (padsNeeded == 10) return results; // No padding needed
-        for (int i = 1; i < padsNeeded - 1; i++)
-        {
-            results += "".PadRight(94, '9') + Environment.NewLine;
-        }
-        results += "".PadRight(94, '9');
-        return results;
-    }
+    /*
+    * Cieling block count calculation
+    */
+    
     public static int CalculateBlockCount(int entryRecordCount, int batchCount) //entry and addendum records
     {
         int fileRecordCount =2; // File Header and File Control
         int batchesCount = 2 * batchCount; // Batch Header and Batch Control
-        int totalCount = entryRecordCount + fileRecordCount + batchesCount;
-        return totalCount / 10; // Each block has 10 records
+        decimal totalCount = entryRecordCount + fileRecordCount + batchesCount;
+        decimal totalBlocks = totalCount / 10;
+        return (int)Math.Ceiling(totalBlocks); // Each block has 10 records
     }
     public bool IsCreditsEqualToDebits()
     {

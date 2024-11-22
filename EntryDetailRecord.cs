@@ -5,9 +5,9 @@ public class EntryDetailRecord
 {
     public RecordTypeCode RecordTypeCode = RecordTypeCode.EntryDetail; // Fixed value for Entry Detail
     public required TransactionCode TransactionCode; // 22 for credit, 27 for debit
-    public required string ReceivingDFIRoutingNumber; // First 8 digits of the routing number
+    public required DFINumber ReceivingDFI; // First 8 digits of the routing number
     public required string CheckDigit; // Last digit of the routing number
-    public required string ReceivingDFIAccountNumber; // Account number
+    public required string ReceivingAccountNumber; // Account number
     public required decimal Amount; // in dollars
     public required string IndividualIdentificationNumber; // Can be a unique ID for the sender
     public required string IndividualName; // Name of the receiver
@@ -24,37 +24,38 @@ public class EntryDetailRecord
         {
             _entryAddendumRecord = value;
             AddendumRecordIndicator = value != null ? 1 : 0;
+
         }
     }
 
     [SetsRequiredMembers]
-    public EntryDetailRecord(TransactionCode transactionCode, string receivingDFIRoutingNumber, string checkDigit, 
-                            string receivingDFIAccountNumber, decimal amount, string individualIdentificationNumber,
+    public EntryDetailRecord(TransactionCode transactionCode, DFINumber receivingDFIRoutingNumber, string checkDigit, 
+                            string receivingAccountNumber, decimal amount, string individualIdentificationNumber,
                              string individualName, string traceNumber)
     {
         TransactionCode = transactionCode;
-        if(string.IsNullOrWhiteSpace(receivingDFIRoutingNumber)|| receivingDFIRoutingNumber.Length != 8)
+        if(receivingDFIRoutingNumber == null)
         {
-            throw new ArgumentException("ReceivingDFIRoutingNumber must be 8 digits");
+            throw new ArgumentNullException(nameof(receivingDFIRoutingNumber), "ReceivingDFIRoutingNumber cannot be null");
         }
-        ReceivingDFIRoutingNumber = receivingDFIRoutingNumber;
-        if (string.IsNullOrWhiteSpace(checkDigit))
+        ReceivingDFI = receivingDFIRoutingNumber;
+        if (string.IsNullOrWhiteSpace(checkDigit)&& receivingDFIRoutingNumber != null)
         {
-            checkDigit = receivingDFIRoutingNumber[^1..];
+            checkDigit = DFINumber.CalculateCheckDigit(receivingDFIRoutingNumber).ToString();
         }
         else
         {
-            if (checkDigit.Length > 1 || checkDigit != receivingDFIRoutingNumber[^1..])
+            if (checkDigit.Length > 1 || receivingDFIRoutingNumber == null ||  checkDigit != DFINumber.CalculateCheckDigit(receivingDFIRoutingNumber).ToString())
             {
-                throw new ArgumentException("CheckDigit must be the last digit of the ReceivingDFIRoutingNumber : " + checkDigit + " is not the last digit of " + receivingDFIRoutingNumber);
+                throw new ArgumentException("CheckDigit must be the checksum of the first 8 digits checkDigit: " + checkDigit + " is not the checksum digit of " + receivingDFIRoutingNumber);
             }
         }
         CheckDigit = checkDigit;
-        if (string.IsNullOrWhiteSpace(receivingDFIAccountNumber) || receivingDFIAccountNumber.Length > 17 )
+        if (string.IsNullOrWhiteSpace(receivingAccountNumber) || receivingAccountNumber.Length > 17 )
         {
             throw new ArgumentException("ReceivingDFIAccountNumber must be 17 digits with at least 1 character");
         }
-        ReceivingDFIAccountNumber = receivingDFIAccountNumber;
+        ReceivingAccountNumber = receivingAccountNumber;
         if(amount < 0 || amount > 99999999.99M) // 8 digits and 2 decimal places total of 10
         {
             throw new ArgumentException($"Amount must be greater than 0 or less than $99999999.99 : " 
@@ -83,9 +84,9 @@ public class EntryDetailRecord
         return string.Concat( 
             RecordTypeCode.ToStringValue() +
             TransactionCode.ToStringValue() +
-            ReceivingDFIRoutingNumber.PadLeft(8, '0') +
+            ReceivingDFI.ToString() +
             CheckDigit +
-            ReceivingDFIAccountNumber.PadRight(17) +
+            ReceivingAccountNumber.PadRight(17) +
             Amount.ToString("F2").Replace(".", "").PadLeft(10, '0') +
             IndividualIdentificationNumber.PadRight(15) +
             IndividualName.PadRight(22) +
@@ -105,24 +106,25 @@ public class EntryDetailRecord
     * TraceNumber << a unique identifier for this transaction Maybe the entryID in your system to check off this row for errors
     * Wait the required time (typically 3 banking days) before initiating live transactions. This allows the receiving institution to reject or validate the prenote.
     */
-    public static EntryDetailRecord CreatePrenoteEntryDetailRecord(TransactionCode transactionCode,string receivingDFIRoutingNumber, string receivingDFIAccountNumber,  string individualIdentificationNumber, string individualName, string traceNumber)
+    public static EntryDetailRecord CreatePrenoteEntryDetailRecord(TransactionCode transactionCode,DFINumber receivingDFI, string receivingDFIAccountNumber,  string individualIdentificationNumber, string individualName, string traceNumber)
     {
         decimal amount = 0.00M; // prenote amount is 0.00
-        string checkDigit = receivingDFIRoutingNumber[^1..]; // last digit of the routing number
-        return new EntryDetailRecord(transactionCode, receivingDFIRoutingNumber, checkDigit, receivingDFIAccountNumber, amount, individualIdentificationNumber, individualName, traceNumber);
+        string checkDigit = DFINumber.CalculateCheckDigit(receivingDFI).ToString(); 
+        return new EntryDetailRecord(transactionCode, receivingDFI, checkDigit, receivingDFIAccountNumber, amount, individualIdentificationNumber, individualName, traceNumber);
     }
-    public static EntryDetailRecord CreateCheckingCreditEntry(string receivingDFIRoutingNumber, string receivingDFIAccountNumber, decimal amount, string individualIdentificationNumber, string individualName, string traceNumber)
+    public static EntryDetailRecord CreateCheckingCreditEntry(DFINumber receivingDFI, string receivingDFIAccountNumber, decimal amount, string individualIdentificationNumber, string individualName, string traceNumber)
     {
-        string checkDigit = receivingDFIRoutingNumber[^1..]; // last digit of the routing number
-        return new EntryDetailRecord(TransactionCode.DepositChecking, receivingDFIRoutingNumber, checkDigit, receivingDFIAccountNumber, amount, individualIdentificationNumber, individualName, traceNumber);
+        string checkDigit = DFINumber.CalculateCheckDigit(receivingDFI).ToString(); 
+        return new EntryDetailRecord(TransactionCode.DepositChecking, receivingDFI, checkDigit, receivingDFIAccountNumber, amount, individualIdentificationNumber, individualName, traceNumber);
     }
-    public static EntryDetailRecord CreateCheckingCreditEntryWithAddendum(string receivingDFIRoutingNumber, string receivingDFIAccountNumber, decimal amount, string individualIdentificationNumber, string individualName, string traceNumber, string addendumString)
+    public static EntryDetailRecord CreateCheckingCreditEntryWithAddendum(DFINumber receivingDFI, string receivingDFIAccountNumber, decimal amount, string individualIdentificationNumber, string individualName, string traceNumber, string addendumString)
     {
-        string checkDigit = receivingDFIRoutingNumber[^1..]; // last digit of the routing number
+        string checkDigit = DFINumber.CalculateCheckDigit(receivingDFI).ToString(); 
         EntryAddendumRecord addendumRecord = new EntryAddendumRecord(addendumString, traceNumber.Substring(traceNumber.Length - 7));
         addendumRecord.AddendumTypeCode = AddendumTypeCode.AdditionalPaymentInformation; // 05 for ccd
-        EntryDetailRecord entryDetailRecord = new EntryDetailRecord(TransactionCode.DepositChecking, receivingDFIRoutingNumber, checkDigit, receivingDFIAccountNumber, amount, individualIdentificationNumber, individualName, traceNumber);
+        EntryDetailRecord entryDetailRecord = new EntryDetailRecord(TransactionCode.DepositChecking, receivingDFI, checkDigit, receivingDFIAccountNumber, amount, individualIdentificationNumber, individualName, traceNumber);
         entryDetailRecord.EntryAddendumRecord = addendumRecord;
         return entryDetailRecord;
     }
+   
 }

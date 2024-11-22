@@ -16,7 +16,7 @@ namespace NachaSharp
             decimal totalCreditAmount = 2000.75M;
             string companyIdentification = "123456789";
             string messageAuthenticationCode = "ZZZZZZZZZZZZZZZZZZZ";
-            string originatingDFI = "12345678";
+            DFINumber originatingDFI = new DFINumber("12345678");
             int batchNumber = 1;
 
             // Act
@@ -39,7 +39,7 @@ namespace NachaSharp
             Assert.Equal(companyIdentification, batchControlRecord.CompanyIdentification);
             Assert.Equal(originatingDFI, batchControlRecord.OriginatingDFI);
             Assert.Equal(batchNumber, batchControlRecord.BatchNumber);
-            //string s = batchControlRecord.GenerateRecord();
+            string s = batchControlRecord.GenerateRecord();
             Assert.Equal("820000000500234567890000001000500000002000750123456789ZZZZZZZZZZZZZZZZZZZ      123456780000001", batchControlRecord.GenerateRecord());
             Assert.Equal(94, batchControlRecord.GenerateRecord().Length);
         }
