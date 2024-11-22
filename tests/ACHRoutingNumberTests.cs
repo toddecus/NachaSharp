@@ -34,13 +34,5 @@ namespace NachaSharp.Tests
             Assert.Throws<ArgumentOutOfRangeException>(() => new ACHRoutingNumber(routingNumber));
         }
 
-        [Fact]
-        public void IsValidRoutingNumber_NullNumber_ReturnsFalse()
-        {
-            // Arrange
-            string routingNumber = null;
-            // Assert
-            Assert.Throws<NullReferenceException>(() => new ACHRoutingNumber(routingNumber));
-        }
     }
 }

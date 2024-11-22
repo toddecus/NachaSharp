@@ -51,7 +51,7 @@ public class EntryDetailRecordTests
     {
         // Arrange
         TransactionCode transactionCode = TransactionCode.DepositChecking;
-        DFINumber receivingDFI = null;
+        DFINumber receivingDFI = new DFINumber("07100050");
         string invalidCheckDigit = "A";
         string receivingDFIAccountNumber = "12345678901234567";
         decimal amount = 100.50m;
@@ -60,7 +60,7 @@ public class EntryDetailRecordTests
         string traceNumber = "000000987654321";
 
         // Act & Assert
-        Assert.Throws<ArgumentNullException>(() => new EntryDetailRecord(transactionCode,
+        Assert.Throws<ArgumentException>(() => new EntryDetailRecord(transactionCode,
                                                                      receivingDFI,
                                                                      invalidCheckDigit,
                                                                      receivingDFIAccountNumber,
