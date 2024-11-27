@@ -47,7 +47,7 @@ nachaFile.CalculateFileControl()
 
 //Then write out the file to whatever file mechanism you are using. S3? 
 System.out.write(nachaFile.ToStringValue());
-// or 
+// or to write out a local file in /outputFile/nacha.txt
 nachaFile.generateNachaFile(fullPath)
 ```
 
