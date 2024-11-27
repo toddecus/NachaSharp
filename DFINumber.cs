@@ -42,7 +42,8 @@ namespace NachaSharp
             }
 
             int remainder = weightedSum % 10;
-            return (10 - remainder) % 10;
+            int temp = (10 - remainder) % 10;
+            return temp;
         }
         public static int CalculateCheckDigit(DFINumber dfiNumber)
         {

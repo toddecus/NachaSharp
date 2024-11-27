@@ -38,6 +38,8 @@ namespace NachaSharp
             List<string> routingNumbers = new List<string>();
                 int entryCounter = 0;
                 int addendumCounter = 0;
+            ControlRecord.TotalCreditAmount = 0.0m;
+            ControlRecord.TotalDebitAmount = 0.0m;
             foreach (var entry in EntryDetailRecords)
             {
                 if (entry.TransactionCode == TransactionCode.DebitChecking || entry.TransactionCode == TransactionCode.DebitSavings)

@@ -10,7 +10,7 @@ public class FileHeaderRecord
     public RecordTypeCode RecordTypeCode = RecordTypeCode.FileHeader;  // Fixed value for file header
     public string PriorityCode = "01";   // Default priority 01-99 01 is the highest
     public required ACHRoutingNumber ImmediateDestinationRoutingNumber;  // Destination routing number a " " + 9 digit number bank routing number
-    public required string ImmediateOrigin;       // Origin number 10 digit number usually IRS federal tax ID or Bank assigned number.
+    public required string ImmediateOrigin;       // Origin number 9 digit number usually IRS federal tax ID or Bank assigned number.
     public DateTime FileCreationDate = DateTime.Now; //yyMMdd
     public TimeSpan FileCreationTime = DateTime.Now.TimeOfDay; //hhmm
     /* File version The File ID Modifier in the NACHA FileHeaderRecord is a single alphanumeric 
@@ -48,9 +48,9 @@ public class FileHeaderRecord
         {
             throw new ArgumentNullException(nameof(immediateDestinationRoutingNumber), "ImmediateDestinationRoutingNumber cannot be null");
         }   
-        if (string.IsNullOrWhiteSpace(immediateOrigin) )
+        if (string.IsNullOrWhiteSpace(immediateOrigin) || Regex.IsMatch(immediateOrigin, @"^\d{9}$") == false)  
         {
-            throw new ArgumentException("ImmediateOrigin must be the bank provided 10 digit ACH Account number for your business.");
+            throw new ArgumentException("ImmediateOrigin must be the bank provided 9 digit ACH Account number for your business.");
         }
         if (referenceCode == null)
         {
@@ -72,8 +72,8 @@ public class FileHeaderRecord
         return string.Concat(
             RecordTypeCode.ToStringValue(),
             PriorityCode,
-            ImmediateDestinationRoutingNumber.toString().PadLeft(10, ' '),
-            ImmediateOrigin.PadLeft(10, ' '),
+            ImmediateDestinationRoutingNumber.toString().PadLeft(10, ' '), // 9 digit number pad with a space
+            ImmediateOrigin.PadLeft(10, ' '),// 9 digit number pad with a space
             FileCreationDate.ToString("yyMMdd"),
             FileCreationTime.ToString("hhmm"),
             FileIdModifier,

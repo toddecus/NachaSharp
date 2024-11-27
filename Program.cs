@@ -27,20 +27,30 @@ public class Program
                 File.Delete(fullPath);
                 Console.WriteLine($"Deleted existing file: {fullPath}");
             }
+            string YourBankName = "Your Bank Name"; //23 chars max
+            string YourBankRoutingNumber = "999999992"; // DFI="99999999" CheckDigit="2" 9 digits
+            string YourCompanyName = "My Company";// 23 chars max
+            string BankAssignedYourCompanyACHID = "123456789"; //max 9 chars relates to your bank account number maybe TAXID
+            string YourSystemReference = "1234ABCD";// 8 chars for your to reference this file in 
             // Instantiate the NACHA file generator
-            var nachaFileGenerator = new NachaFile(
-                new FileHeaderRecord("La Salle Bank N.A.",new ACHRoutingNumber("071000505"), "YourCompany Name","072000805","12345678"),
-                new FileControlRecord(0, 0, 0, "", 0.00m , 0.00m), 
+            //var nachaFile = new NachaFile( new FileHeaderRecord("La Salle Bank N.A.", new ACHRoutingNumber("071000505"), "YourCompany Name", "072000805", "12345678"), logger);
+            var nachaFile = new NachaFile(
+                new FileHeaderRecord(YourBankName,
+                new ACHRoutingNumber(YourBankRoutingNumber),
+                YourCompanyName,
+                BankAssignedYourCompanyACHID,
+                YourSystemReference),
                 logger); 
 
-            // Generate the test NACHA file
-            nachaFileGenerator.PopulateTestData();
-            logger.LogTrace("Test data populated!");
+            // Generate the test NACHA file entry data
+            nachaFile.PopulateTestBatchAndEntryData();
+            nachaFile.CalculateFileControl();
+            logger.LogTrace("Test data populated and fileControl Calculated!");
         
-            nachaFileGenerator.GenerateTestNachaFile();
+            // Generate the NACHA file in outputFiles folder NachaSharp/outputFiles/nacha.txt
+            nachaFile.GenerateNachaFile( fullPath);
             logger.LogTrace("NACHA file generated successfully, look for a {0}", filePath + fileName);
-            logger.LogTrace("The file should look like this:"+ Environment.NewLine+"{0}",nachaFileGenerator.ToStringValue());
-            logger.LogTrace("vi {0}", filePath + fileName);
+            logger.LogTrace("The file should look like this:"+ Environment.NewLine+"{0}",nachaFile.ToStringValue());
         }
         catch (Exception ex)
         {

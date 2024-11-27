@@ -32,6 +32,13 @@ public class NachaFile
             });
         _logger = loggerFactory.CreateLogger<NachaSharp.NachaFile>();
     }
+    [SetsRequiredMembers]
+    public NachaFile(FileHeaderRecord fileHeaderRecord, ILogger<NachaFile> logger)
+    {
+        FileHeader = fileHeaderRecord ?? throw new ArgumentNullException(nameof(fileHeaderRecord));
+        FileControl = new FileControlRecord(0, 0, 0, "", 0.00m, 0.00m);
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
     /*
     * This method generates the NACHA file as a string with each 94-character record on a new line and file padded with lines of 9 to make
@@ -55,10 +62,12 @@ public class NachaFile
         int entryAndAddendumCount = 0;
         foreach (var batch in Batches)
         {
+            batch.CalculateControlRecord();
             batchesString.Append( batch.GenerateRecord());
             entryAndAddendumCount += batch.ControlRecord.EntryAndAddendumCount;
         }
         this.CalculateFileControl();
+        _logger.LogTrace("File Control Record generated.");
         return string.Concat(
             FileHeader.GenerateRecord(), 
             batchesString.ToString(), 
@@ -67,7 +76,7 @@ public class NachaFile
         );
     }
 
-    private void CalculateFileControl()
+    public void CalculateFileControl()
     {
         if (FileControl == null)
         {
@@ -98,12 +107,9 @@ public class NachaFile
         FileControl.EntryHash = FileControlRecord.CalculateEntryHash(routingNumbers);
     }
 
-    public void GenerateTestNachaFile()
+    public void GenerateNachaFile(string fullPath)
     {
-        string filePath = "./outputFiles/";
-        string fileName = "nacha.txt";
-        string fullPath = Path.Combine(filePath, fileName);
-
+        _logger.LogTrace("Generating NACHA file... {0}", fullPath);
         _logger.LogTrace($"FileHeader{FileHeader}, BatchHeader{Batches[0].HeaderRecord}, BatchControl{Batches[0].ControlRecord}," +
             $" and FileControl{FileControl} must be populated before generating the NACHA file.");
         if (FileHeader == null || Batches[0].HeaderRecord == null || Batches[0].ControlRecord == null || FileControl == null)
@@ -114,28 +120,18 @@ public class NachaFile
 
         using (var writer = new StreamWriter(fullPath))
         {
-            _logger.LogTrace("Generating NACHA file... {0}", filePath + fileName);
-             int entryAndAddendumCount = 0;
-            foreach (var batch in Batches)
-            {
-                _logger.LogTrace("Batch and Entry Records generated for BatchNumber {0}.", batch.HeaderRecord.BatchNumber);
-              entryAndAddendumCount += batch.ControlRecord.EntryAndAddendumCount;
-            }
+            _logger.LogTrace("Generating NACHA file... {0}", fullPath);
             string nachaFileString = this.ToStringValue();
             if (nachaFileString.Contains("ERROR"))
             {
                 throw new InvalidOperationException(nachaFileString);
             }
-
             writer.Write(nachaFileString);
-            _logger.LogTrace("File Control Record generated.");
-            writer.Write(GetFileNinePad(entryAndAddendumCount, Batches.Count, _logger)); // Pad the file to 10 records 
-            _logger.LogTrace("File padded to 10 records. entryAndAddendumCount {0} batchCount {1}", entryAndAddendumCount, Batches.Count);
         }
 
 
     }
-    public void PopulateTestData()
+    public void PopulateTestBatchAndEntryData()
     {
         BatchHeaderRecord batchHeader = new BatchHeaderRecord
         (
@@ -145,7 +141,7 @@ public class NachaFile
             "Payments",
             DateTime.Now.AddDays(2), // Company Descriptive Date
             DateTime.Now.AddDays(2), // Effective Entry Date
-            FileHeader.ImmediateDestinationRoutingNumber, // Originating DFI
+            FileHeader.ImmediateDestinationRoutingNumber, // Originating DFI ACH IS a DFI with a checkdigit
             1 // Batch number
         );
         BatchControlRecord batchControl = new BatchControlRecord
@@ -186,8 +182,8 @@ public class NachaFile
             DFINumber.CalculateCheckDigit("01100002").ToString(),
             "123456789",
             200.02m,  // $500.00
-            "Jane Doe",
             "123456789",
+            "Jane Doe",
             FileHeader.ImmediateDestinationRoutingNumber.CHARACTERS+"0000002"
         ));
         entryDetailRecords[1].EntryAddendumRecord = new EntryAddendumRecord
@@ -203,9 +199,19 @@ public class NachaFile
             DFINumber.CalculateCheckDigit("01100003").ToString(),
             "123456789",
             300.04m,  // $500.00
-            "Chris Doe",
             "123456789",
+            "Chris Doe",
             FileHeader.ImmediateDestinationRoutingNumber.CHARACTERS+"0000003"
+        ));
+        entryDetailRecords.Add(EntryDetailRecord.CreatePrenoteEntryDetailRecord
+        (
+        
+            TransactionCode.PrenotificationCheckingCredit,  // PreNote Checking account credit
+            new DFINumber("01100004"),
+            "123456789",
+            "123456789",
+            "Chris Doe",
+            FileHeader.ImmediateDestinationRoutingNumber.CHARACTERS+"0000004"
         ));
 
         Batches.Add(firstBatch);
@@ -215,7 +221,6 @@ public class NachaFile
             _logger.LogTrace("Batch {0} populated with {1} EntryDetailRecords.", batch.HeaderRecord.BatchNumber, batch.EntryDetailRecords.Count);
             _logger.LogTrace("Control Records EntryAndAddendum Count {0} EntryHash {1} Credits {2} Debits {3}.", batch.ControlRecord.EntryAndAddendumCount,batch.ControlRecord.EntryHash, batch.ControlRecord.TotalCreditAmount, batch.ControlRecord.TotalDebitAmount);
         }
-        CalculateFileControl();
 
     }
     /* The file must be a multiple of 10 records, so this method pads the file with 9s to reach that multiple

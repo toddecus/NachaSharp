@@ -40,7 +40,7 @@ namespace NachaSharp
             Assert.Equal(originatingDFI, batchControlRecord.OriginatingDFI);
             Assert.Equal(batchNumber, batchControlRecord.BatchNumber);
             string s = batchControlRecord.GenerateRecord();
-            Assert.Equal("820000000500234567890000001000500000002000750123456789ZZZZZZZZZZZZZZZZZZZ      123456780000001", batchControlRecord.GenerateRecord());
+            Assert.Equal("82000000050023456789000000100050000000200075 123456789ZZZZZZZZZZZZZZZZZZZ      123456780000001", batchControlRecord.GenerateRecord());
             Assert.Equal(94, batchControlRecord.GenerateRecord().Length);
         }
     }
