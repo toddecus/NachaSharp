@@ -15,7 +15,7 @@ public class BatchHeaderRecord
     public required string CompanyEntryDescription; // Payment description of the transaction on the bank statement 
     public required DateTime CompanyDescriptiveDate; // The date you choose to identify the transactions. This date may be printed on the participants’ bank statement by the Receiving Financial Institution.
     public required DateTime EffectiveEntryDate; // Dates posted to the target account
-    public required DFINumber OriginatingDFI; // Routing number
+    public required DFINumber OriginatingDFI; // DFI number
     public required int BatchNumber; // Batch number
 
     [SetsRequiredMembers]
