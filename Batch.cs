@@ -36,8 +36,8 @@ namespace NachaSharp
                 ControlRecord = new BatchControlRecord(0, "", 0, 0, "", "", new DFINumber("99999999"), 0);
             }
             List<string> routingNumbers = new List<string>();
-                int entryCounter = 0;
-                int addendumCounter = 0;
+            int entryCounter = 0;
+            int addendumCounter = 0;
             ControlRecord.TotalCreditAmount = 0.0m;
             ControlRecord.TotalDebitAmount = 0.0m;
             foreach (var entry in EntryDetailRecords)

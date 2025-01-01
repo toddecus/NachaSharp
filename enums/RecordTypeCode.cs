@@ -1,12 +1,13 @@
 namespace NachaSharp;
-public enum RecordTypeCode {
+public enum RecordTypeCode
+{
     /* Each line of the file should begin with the RecordTypeCode  Header and Control like HTML open/close tags*/
-        FileHeader = 1, 
-        BatchHeader = 5,
-        EntryDetail = 6,
-        Addendum = 7,
-        BatchControl = 8,
-        FileControl = 9
+    FileHeader = 1,
+    BatchHeader = 5,
+    EntryDetail = 6,
+    Addendum = 7,
+    BatchControl = 8,
+    FileControl = 9
 }
 
 public static class RecordTypeCodeExtensions

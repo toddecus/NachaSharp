@@ -1,10 +1,11 @@
 namespace NachaSharp;
-public enum ReceivingAccountType {
+public enum ReceivingAccountType
+{
     checking = 1,
     savings = 2,
     generalledger = 3,
     loan = 4
-  
+
 }
 
 public static class ReceivingAccountTypeExtensions

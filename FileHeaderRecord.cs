@@ -47,8 +47,8 @@ public class FileHeaderRecord
         if (immediateDestinationRoutingNumber == null)
         {
             throw new ArgumentNullException(nameof(immediateDestinationRoutingNumber), "ImmediateDestinationRoutingNumber cannot be null");
-        }   
-        if (string.IsNullOrWhiteSpace(immediateOrigin) || Regex.IsMatch(immediateOrigin, @"^\d{9}$") == false)  
+        }
+        if (string.IsNullOrWhiteSpace(immediateOrigin) || Regex.IsMatch(immediateOrigin, @"^\d{9}$") == false)
         {
             throw new ArgumentException("ImmediateOrigin must be the bank provided 9 digit ACH Account number for your business.");
         }
@@ -86,6 +86,6 @@ public class FileHeaderRecord
             Environment.NewLine
         );
     }
-   
-    
+
+
 }

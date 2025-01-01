@@ -4,8 +4,8 @@ namespace NachaSharp
 {
     public class ACHRoutingNumber : DFINumber
     {
-        public string CheckDigit { get;} 
-        
+        public string CheckDigit { get; }
+
         [SetsRequiredMembers]
         public ACHRoutingNumber(string number) : base(number.Substring(0, 8))
         {
@@ -82,7 +82,7 @@ namespace NachaSharp
             {
                 return false;
             }
-            else if (routingString[8] != (char)('0'+ CalculateCheckDigit(routingString.Substring(0, 8))))
+            else if (routingString[8] != (char)('0' + CalculateCheckDigit(routingString.Substring(0, 8))))
             {
                 return false;
             }

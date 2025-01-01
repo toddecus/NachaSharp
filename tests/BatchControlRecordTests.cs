@@ -11,7 +11,7 @@ namespace NachaSharp
         {
             // Arrange
             int entryAndAddendumCount = 5;
-            string entryHash = "23456789" ;
+            string entryHash = "23456789";
             decimal totalDebitAmount = 1000.50M;
             decimal totalCreditAmount = 2000.75M;
             string companyIdentification = "123456789";

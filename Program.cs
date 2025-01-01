@@ -40,17 +40,17 @@ public class Program
                 YourCompanyName,
                 BankAssignedYourCompanyACHID,
                 YourSystemReference),
-                logger); 
+                logger);
 
             // Generate the test NACHA file entry data
             nachaFile.PopulateTestBatchAndEntryData();
             nachaFile.CalculateFileControl();
             logger.LogTrace("Test data populated and fileControl Calculated!");
-        
+
             // Generate the NACHA file in outputFiles folder NachaSharp/outputFiles/nacha.txt
-            nachaFile.GenerateNachaFile( fullPath);
+            nachaFile.GenerateNachaFile(fullPath);
             logger.LogTrace("NACHA file generated successfully, look for a {0}", filePath + fileName);
-            logger.LogTrace("The file should look like this:"+ Environment.NewLine+"{0}",nachaFile.ToStringValue());
+            logger.LogTrace("The file should look like this:" + Environment.NewLine + "{0}", nachaFile.ToStringValue());
         }
         catch (Exception ex)
         {

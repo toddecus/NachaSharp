@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 
-namespace NachaSharp; 
+namespace NachaSharp;
 public class BatchHeaderRecord
 {
     public RecordTypeCode RecordTypeCode = RecordTypeCode.BatchHeader;  // Fixed value for batch header
@@ -29,16 +29,16 @@ public class BatchHeaderRecord
         }
         if (companyDiscretionaryData.Length > 20 || !Regex.IsMatch(companyDiscretionaryData, @"^[a-zA-Z0-9 ]*$"))
             throw new ArgumentException("Company identification cannot be null or empty and can contain only alpha numeric characters ^[a-zA-Z0-9 ]*$", nameof(companyIdentification));
-        if (companyEntryDescription == null )
+        if (companyEntryDescription == null)
         {
-            companyEntryDescription = ""; 
+            companyEntryDescription = "";
         }
         companyEntryDescription = companyEntryDescription.ToUpperInvariant();
-        if(companyEntryDescription.Length > 10 || !Regex.IsMatch(companyEntryDescription, @"^[A-Z0-9 ]*$"))
+        if (companyEntryDescription.Length > 10 || !Regex.IsMatch(companyEntryDescription, @"^[A-Z0-9 ]*$"))
             throw new ArgumentException("Company entry description cannot be null or empty and can contain only alpha numeric characters ^[A-Z0-9 ]*$", nameof(companyEntryDescription));
         if (batchNumber <= 0)
             throw new ArgumentException("Batch number must be greater than zero.", nameof(batchNumber));
-        if(originatingDFI == null)
+        if (originatingDFI == null)
             throw new ArgumentNullException(nameof(originatingDFI), "OriginatingDFI cannot be null");
 
         CompanyName = companyName;
@@ -51,7 +51,7 @@ public class BatchHeaderRecord
         BatchNumber = batchNumber;
     }
 
-        //return $"{RecordTypeCode.ToStringValue()}{ServiceClassCode.ToStringValue()}{CompanyName.PadRight(16)}{CompanyDiscretionaryData.PadRight(20)}{CompanyIdentification.PadLeft(10)}{StandardEntryClassCode.ToStringValue()}{CompanyEntryDescription.PadRight(10)}{CompanyDescriptiveDate:yyMMdd}{EffectiveEntryDate:yyMMdd}   {OriginatorStatusCode}{OriginatingDFI.PadRight(8)}{BatchNumber.ToString().PadLeft(7, '0')}";
+    //return $"{RecordTypeCode.ToStringValue()}{ServiceClassCode.ToStringValue()}{CompanyName.PadRight(16)}{CompanyDiscretionaryData.PadRight(20)}{CompanyIdentification.PadLeft(10)}{StandardEntryClassCode.ToStringValue()}{CompanyEntryDescription.PadRight(10)}{CompanyDescriptiveDate:yyMMdd}{EffectiveEntryDate:yyMMdd}   {OriginatorStatusCode}{OriginatingDFI.PadRight(8)}{BatchNumber.ToString().PadLeft(7, '0')}";
     public string GenerateRecord()
     {
         return string.Concat(

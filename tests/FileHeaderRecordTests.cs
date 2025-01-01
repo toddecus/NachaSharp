@@ -25,7 +25,7 @@ public class FileHeaderRecordTests
         // Set the datetime to match the generated record
         fileHeaderRecord.FileCreationDate = new DateTime(2024, 11, 06);
         fileHeaderRecord.FileCreationTime = new TimeSpan(20, 07, 10);
-        
+
         // Assert
         Assert.Equal(immediateDestinationName, fileHeaderRecord.ImmediateDestinationName);
         Assert.Equal(immediateDestinationRoutingNumber, fileHeaderRecord.ImmediateDestinationRoutingNumber);
@@ -39,7 +39,7 @@ public class FileHeaderRecordTests
         Assert.Equal("10", fileHeaderRecord.BlockingFactor);
         Assert.Equal("1", fileHeaderRecord.FormatCode);
         string s = fileHeaderRecord.GenerateRecord();
-        Assert.Equal("101 071000505 0720008052411062007A094101Destination Bank       Origin Business        88888888" + Environment.NewLine,fileHeaderRecord.GenerateRecord());
+        Assert.Equal("101 071000505 0720008052411062007A094101Destination Bank       Origin Business        88888888" + Environment.NewLine, fileHeaderRecord.GenerateRecord());
         Assert.Equal(95, fileHeaderRecord.GenerateRecord().Length);
     }
 }

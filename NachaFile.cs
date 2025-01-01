@@ -28,7 +28,7 @@ public class NachaFile
         using var loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.AddConsole();
-                builder.SetMinimumLevel(LogLevel.Warning);    
+                builder.SetMinimumLevel(LogLevel.Warning);
             });
         _logger = loggerFactory.CreateLogger<NachaSharp.NachaFile>();
     }
@@ -46,32 +46,32 @@ public class NachaFile
     */
     public string ToStringValue()
     {
-        if(FileControl.BatchCount == 0 || FileControl.BlockCount== 0)
+        if (FileControl.BatchCount == 0 || FileControl.BlockCount == 0)
         {
             return "ERROR: FileControl BatchCount and BlockCount must be populated before generating the NACHA file. Did you forget to call CalculateFileControl?";
         }
-        if(Batches.Count == 0)
+        if (Batches.Count == 0)
         {
             return "ERROR: Invalid Natcha File No batches to generate.";
         }
-        if(Batches[0].ControlRecord.EntryAndAddendumCount == 0)
+        if (Batches[0].ControlRecord.EntryAndAddendumCount == 0)
         {
-            return "ERROR: No entries in the first batch. Did you forget to call CalculateControlRecord() on the Batch?"; 
+            return "ERROR: No entries in the first batch. Did you forget to call CalculateControlRecord() on the Batch?";
         }
         StringBuilder batchesString = new StringBuilder();
         int entryAndAddendumCount = 0;
         foreach (var batch in Batches)
         {
             batch.CalculateControlRecord();
-            batchesString.Append( batch.GenerateRecord());
+            batchesString.Append(batch.GenerateRecord());
             entryAndAddendumCount += batch.ControlRecord.EntryAndAddendumCount;
         }
         this.CalculateFileControl();
         _logger.LogTrace("File Control Record generated.");
         return string.Concat(
-            FileHeader.GenerateRecord(), 
-            batchesString.ToString(), 
-            FileControl.GenerateRecord(),  
+            FileHeader.GenerateRecord(),
+            batchesString.ToString(),
+            FileControl.GenerateRecord(),
             GetFileNinePad(entryAndAddendumCount, Batches.Count, _logger)
         );
     }
@@ -93,8 +93,8 @@ public class NachaFile
         FileControl.TotalCreditDollarAmount = 0.00m;
         foreach (var batch in Batches)
         {
-            entryCounter+= batch.ControlRecord.EntryAndAddendumCount; 
-            
+            entryCounter += batch.ControlRecord.EntryAndAddendumCount;
+
             FileControl.TotalDebitDollarAmount += batch.ControlRecord.TotalDebitAmount;
             FileControl.TotalCreditDollarAmount += batch.ControlRecord.TotalCreditAmount;
             foreach (var entry in batch.EntryDetailRecords)
@@ -166,7 +166,7 @@ public class NachaFile
             500.06m,  // $500.00
             "123456789",
             "John Doe",
-            FileHeader.ImmediateDestinationRoutingNumber.CHARACTERS+"0000001"
+            FileHeader.ImmediateDestinationRoutingNumber.CHARACTERS + "0000001"
         ));
         entryDetailRecords[0].EntryAddendumRecord = new EntryAddendumRecord
         (
@@ -184,7 +184,7 @@ public class NachaFile
             200.02m,  // $500.00
             "123456789",
             "Jane Doe",
-            FileHeader.ImmediateDestinationRoutingNumber.CHARACTERS+"0000002"
+            FileHeader.ImmediateDestinationRoutingNumber.CHARACTERS + "0000002"
         ));
         entryDetailRecords[1].EntryAddendumRecord = new EntryAddendumRecord
         (
@@ -201,17 +201,17 @@ public class NachaFile
             300.04m,  // $500.00
             "123456789",
             "Chris Doe",
-            FileHeader.ImmediateDestinationRoutingNumber.CHARACTERS+"0000003"
+            FileHeader.ImmediateDestinationRoutingNumber.CHARACTERS + "0000003"
         ));
         entryDetailRecords.Add(EntryDetailRecord.CreatePrenoteEntryDetailRecord
         (
-        
+
             TransactionCode.PrenotificationCheckingCredit,  // PreNote Checking account credit
             new DFINumber("01100004"),
             "123456789",
             "123456789",
             "Chris Doe",
-            FileHeader.ImmediateDestinationRoutingNumber.CHARACTERS+"0000004"
+            FileHeader.ImmediateDestinationRoutingNumber.CHARACTERS + "0000004"
         ));
 
         Batches.Add(firstBatch);
@@ -219,18 +219,18 @@ public class NachaFile
         {
             batch.CalculateControlRecord();
             _logger.LogTrace("Batch {0} populated with {1} EntryDetailRecords.", batch.HeaderRecord.BatchNumber, batch.EntryDetailRecords.Count);
-            _logger.LogTrace("Control Records EntryAndAddendum Count {0} EntryHash {1} Credits {2} Debits {3}.", batch.ControlRecord.EntryAndAddendumCount,batch.ControlRecord.EntryHash, batch.ControlRecord.TotalCreditAmount, batch.ControlRecord.TotalDebitAmount);
+            _logger.LogTrace("Control Records EntryAndAddendum Count {0} EntryHash {1} Credits {2} Debits {3}.", batch.ControlRecord.EntryAndAddendumCount, batch.ControlRecord.EntryHash, batch.ControlRecord.TotalCreditAmount, batch.ControlRecord.TotalDebitAmount);
         }
 
     }
     /* The file must be a multiple of 10 records, so this method pads the file with 9s to reach that multiple
         entryRecordCount should be EntryDetailRecordCount + EntryAddendumRecordCount */
-    public static string GetFileNinePad(int entryRecordCount, int batchCount, ILogger  logger)
+    public static string GetFileNinePad(int entryRecordCount, int batchCount, ILogger logger)
     {
         logger.LogTrace("GetFileNinePad EntryRecordCount {0} BatchCount {1}", entryRecordCount, batchCount);
         string results = "";
         int fileRecordCount = 2; // File Header and File Control
-        int batchesCount = 2 * batchCount ; // Batch Header and Batch Control
+        int batchesCount = 2 * batchCount; // Batch Header and Batch Control
         int totalCount = entryRecordCount + fileRecordCount + batchesCount;
         int padsNeeded = 10 - (totalCount % 10);
         if (padsNeeded == 10) return results; // No padding needed

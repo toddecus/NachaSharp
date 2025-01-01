@@ -1,8 +1,8 @@
 using System.Diagnostics.CodeAnalysis;
-namespace NachaSharp; 
+namespace NachaSharp;
 public class BatchControlRecord
 {
-     public RecordTypeCode RecordTypeCode = RecordTypeCode.BatchControl;  // Fixed value for batch control
+    public RecordTypeCode RecordTypeCode = RecordTypeCode.BatchControl;  // Fixed value for batch control
     public ServiceClassCode ServiceClassCode = ServiceClassCode.MixedDebitsAndCredits; // Mixed debits and credits
     public required int EntryAndAddendumCount;
     public required string EntryHash;  //Hash total of all routing numbers, using the last 10 digits (10 characters).
@@ -13,7 +13,7 @@ public class BatchControlRecord
     public readonly string Reserved = "".PadRight(6);  // Reserved field (empty)
     public required DFINumber OriginatingDFI; // Routing number
     public required int BatchNumber; // Batch number
-    
+
 
     [SetsRequiredMembers]
     public BatchControlRecord(int entryAndAddendumCount, string entryHash, decimal totalDebitAmount, decimal totalCreditAmount, string companyIdentification, string messageAuthenticationCode, DFINumber originatingDFI, int batchNumber)
@@ -40,10 +40,10 @@ public class BatchControlRecord
             TotalCreditAmount.ToString("F2").Replace(".", "").PadLeft(12, '0') +
             CompanyIdentification.PadLeft(10, ' ') +
             MessageAuthenticationCode.PadRight(19) +
-            Reserved + 
+            Reserved +
             OriginatingDFI +
             BatchNumber.ToString().PadLeft(7, '0')
-        ); 
+        );
     }
 
     /* todo: Consolidated this to an interface that both ControlRecords can use */

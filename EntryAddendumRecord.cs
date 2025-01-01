@@ -12,7 +12,7 @@ public class EntryAddendumRecord
         get => _paymentRelatedInformation;
         set
         {
-            if(value == null)
+            if (value == null)
             {
                 value = string.Empty;
             }
